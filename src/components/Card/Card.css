@@ -1,0 +1,20 @@
+.card {
+    flex: 1;
+    padding: 16px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background: #fafafa;
+     margin-bottom: 12px;
+}
+
+.card-title {
+    margin: 0 0 8px 0;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.card-description {
+    margin: 0;
+    font-size: 14px;
+    color: #555;
+}
