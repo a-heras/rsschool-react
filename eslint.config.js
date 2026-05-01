@@ -32,9 +32,5 @@ export default defineConfig([
         version: 'detect',
       },
     },
-
-    rules: {
-      //"react/jsx-no-target-blank": "off",
-    },
   },
 ]);
