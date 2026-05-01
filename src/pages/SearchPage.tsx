@@ -1,11 +1,12 @@
 import { Component } from "react";
 import { Main } from "../layout/Main/Main";
+import { Search } from "../components/Search/Search";
 
 export class SearchPage extends Component {
   render() {
     return (
         <Main
-            search={<input type="text" placeholder="Search here..." />}
+            search={<Search />}
             results={<div>Results list will be here</div>}
         />
     );
