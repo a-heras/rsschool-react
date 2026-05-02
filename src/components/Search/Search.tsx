@@ -1,11 +1,15 @@
 import { Component, type ChangeEvent } from "react";
 
+interface SearchProps {
+    onSearch: (term: string) => void;
+}
+
 interface SearchState {
     searchTerm: string;
 }
 
-export class Search extends Component<{}, SearchState> {
-    constructor(props: {}) {
+export class Search extends Component<SearchProps, SearchState> {
+    constructor(props: SearchProps) {
         super(props);
         this.state = {
             searchTerm: "",
@@ -26,6 +30,11 @@ export class Search extends Component<{}, SearchState> {
         localStorage.setItem("searchTerm", value);
     }
 
+    handleSearchClick = () => {
+        const trimmed = this.state.searchTerm.trim();
+        this.props.onSearch(trimmed);
+    }
+
     render() {
         return (
             <div>
@@ -35,6 +44,7 @@ export class Search extends Component<{}, SearchState> {
                     onChange={this.handleChange}
                     placeholder="Search..."
                 />
+                <button onClick={this.handleSearchClick}>Search</button>
             </div>
         );
     }

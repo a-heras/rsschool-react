@@ -7,6 +7,7 @@ import { loadData } from "../api/api";
 
 interface SearchPageState {
     items: Item[];
+    lastSearchTerm: string;
 }
 
 export class SearchPage extends Component<{}, SearchPageState> {
@@ -14,6 +15,7 @@ export class SearchPage extends Component<{}, SearchPageState> {
         super(props);
         this.state = {
             items: [],
+            lastSearchTerm: "",
         };
     }
 
@@ -24,10 +26,24 @@ export class SearchPage extends Component<{}, SearchPageState> {
             this.setState({items})
         });
     }
+
+    handleSearch = (term: string) => {
+        if (term === this.state.lastSearchTerm) {
+            return;
+        }
+
+        loadData(term).then((items) => {
+            this.setState({
+                items,
+                lastSearchTerm: term,
+            });
+        });
+    };
+
     render() {
         return (
             <Main
-                search={<Search />}
+                search={<Search onSearch={this.handleSearch}/>}
                 results={<CardList items={this.state.items} />}
             />
         );
