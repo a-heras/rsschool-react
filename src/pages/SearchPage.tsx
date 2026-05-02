@@ -5,11 +5,13 @@ import { CardList } from "../components/CardList/CardList";
 import { type Item } from "../types/item";
 import { loadData } from "../api/api";
 import { Loading } from "../components/Loading/Loading";
+import { ErrorMessage } from "../components/ErrorMessage/ErrorMessage"
 
 interface SearchPageState {
     items: Item[];
     lastSearchTerm: string;
     loading: boolean;
+    error: string | null;
 }
 
 export class SearchPage extends Component<{}, SearchPageState> {
@@ -18,20 +20,28 @@ export class SearchPage extends Component<{}, SearchPageState> {
         this.state = {
             items: [],
             lastSearchTerm: "",
-             loading: false,
+            loading: false,
+            error: null,
         };
     }
 
     componentDidMount() {
         const saved = localStorage.getItem("searchTerm") || "";
 
-        this.setState({loading: true});
+        this.setState({ loading: true, error: null });
 
         loadData(saved).then((items) => {
             this.setState({
                 items,
                 lastSearchTerm: saved,
                 loading: false,
+                error: null,
+            });
+        })
+        .catch(() => {
+            this.setState({
+                loading: false,
+                error: "Failed to load data. Please try again.",
             });
         });
     }
@@ -43,7 +53,7 @@ export class SearchPage extends Component<{}, SearchPageState> {
             return;
         }
 
-        this.setState({loading: true});
+        this.setState({loading: true, error: null});
         localStorage.setItem("searchTerm", trimmed)
 
         loadData(trimmed).then((items) => {
@@ -51,6 +61,13 @@ export class SearchPage extends Component<{}, SearchPageState> {
                 items,
                 lastSearchTerm: trimmed,
                 loading: false,
+                error: null,
+            });
+        })
+        .catch(() => {
+            this.setState({
+                loading: false,
+                error: "Failed to load data. Please try again.",
             });
         });
     };
@@ -60,9 +77,11 @@ export class SearchPage extends Component<{}, SearchPageState> {
             <Main
                 search={<Search onSearch={this.handleSearch}/>}
                 results={
-                    this.state.loading
-                    ? <Loading />
-                    : <CardList items={this.state.items} />
+                    this.state.error
+                        ? <ErrorMessage message={this.state.error} />
+                        : this.state.loading
+                            ? <Loading />
+                            : <CardList items={this.state.items} />
                 }
             />
         );
