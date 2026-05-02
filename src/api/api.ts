@@ -13,6 +13,9 @@ export function loadData(searchTerm:string): Promise<Item[]> {
                 { name: "First Item", description: "Description for the first item" },
                 { name: "Second Item", description: "Description for the second item" },
                 { name: "Third Item", description: "Description for the third item" },
+                { name: "First Item", description: "Description for the first item" },
+                { name: "Second Item", description: "Description for the second item" },
+                { name: "Third Item", description: "Description for the third item" },
             ];
 
             if(!searchTerm) {

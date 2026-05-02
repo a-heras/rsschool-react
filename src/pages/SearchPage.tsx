@@ -5,7 +5,8 @@ import { CardList } from "../components/CardList/CardList";
 import { type Item } from "../types/item";
 import { loadData } from "../api/api";
 import { Loading } from "../components/Loading/Loading";
-import { ErrorMessage } from "../components/ErrorMessage/ErrorMessage"
+import { ErrorMessage } from "../components/ErrorMessage/ErrorMessage";
+import { ErrorButton } from "../components/ErrorButton/ErrorButton";
 
 interface SearchPageState {
     items: Item[];
@@ -75,13 +76,21 @@ export class SearchPage extends Component<{}, SearchPageState> {
     render() {
         return (
             <Main
-                search={<Search onSearch={this.handleSearch}/>}
+                search={<Search onSearch={this.handleSearch} />}
                 results={
-                    this.state.error
-                        ? <ErrorMessage message={this.state.error} />
-                        : this.state.loading
-                            ? <Loading />
-                            : <CardList items={this.state.items} />
+                    <div>
+                        {this.state.error ? (
+                            <ErrorMessage message={this.state.error} />
+                        ) : this.state.loading ? (
+                            <Loading />
+                        ) : (
+                            <CardList items={this.state.items} />
+                        )}
+
+                        <div>
+                            <ErrorButton />
+                        </div>
+                    </div>
                 }
             />
         );

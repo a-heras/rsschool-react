@@ -8,12 +8,20 @@ interface CardListProps {
 
 export class CardList extends Component<CardListProps> {
     render() {
-        return(
-            <div className="card-list ">
-                {this.props.items.map((item, index) => (
-                    <Card key={index} item={item} />
-                ))}    
-            </div>
+        return (
+            <table className="results-table">
+                <thead>
+                    <tr>
+                        <th>Item Name</th>
+                        <th>Item Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {this.props.items.map((item, index) => (
+                        <Card key={index} item={item} />
+                    ))}
+                </tbody>
+            </table>
         );
     }
 }

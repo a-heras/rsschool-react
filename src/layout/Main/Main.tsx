@@ -8,16 +8,16 @@ interface MainProps {
 
 export class Main extends Component<MainProps> {
     render() {
-        const {search, results} = this.props;
         return (
-            <div className="main-layout">
-                <section className="search-section">
-                    {search}
-                </section>
-                <section className="result-section">
-                    {results}
-                </section>
+        <div className="main-container">
+            <div className="top-controls">
+                {this.props.search}
             </div>
+
+            <div className="results-section">
+                {this.props.results}
+            </div>
+        </div>
         );
-    }    
+    }
 }

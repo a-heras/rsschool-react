@@ -11,10 +11,10 @@ export class Card extends Component<CardProps> {
         const {item} = this.props;
         
         return(
-            <div className="card">
-                <h3 className="card-title">{item.name}</h3>
-                <p className="card-description">{item.description}</p>
-            </div>
+            <tr className="table-row">
+                <td className="table-cell name-cell">{item.name}</td>
+                <td className="table-cell desc-cell">{item.description}</td>
+            </tr>
         );
     }
 }

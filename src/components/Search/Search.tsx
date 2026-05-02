@@ -1,5 +1,5 @@
 import { Component, type ChangeEvent } from "react";
-
+import "./Search.css"
 interface SearchProps {
     onSearch: (term: string) => void;
 }
@@ -37,14 +37,15 @@ export class Search extends Component<SearchProps, SearchState> {
 
     render() {
         return (
-            <div>
+            <div className="search-container">
                 <input
                     type="text"
+                    className="search-input"
                     value={this.state.searchTerm}
                     onChange={this.handleChange}
                     placeholder="Search..."
                 />
-                <button onClick={this.handleSearchClick}>Search</button>
+                <button className="search-button" onClick={this.handleSearchClick}>Search</button>
             </div>
         );
     }

@@ -1,20 +1,29 @@
-.card {
-    flex: 1;
-    padding: 16px;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    background: #fafafa;
-     margin-bottom: 12px;
+.table-row {
+    transition: background-color 0.2s ease;
 }
 
-.card-title {
-    margin: 0 0 8px 0;
-    font-size: 18px;
-    font-weight: bold;
+.table-row:hover {
+    background-color: #f1f5f9;
 }
 
-.card-description {
-    margin: 0;
-    font-size: 14px;
-    color: #555;
+.table-cell {
+    padding: 16px 20px;
+    border-bottom: 1px solid #f1f5f9;
+    font-size: 15px;
+    color: #334155;
+    line-height: 1.5;
+}
+
+.table-row:last-child .table-cell {
+    border-bottom: none;
+}
+
+.name-cell {
+    font-weight: 600;
+    color: #1e293b;
+    width: 30%;
+}
+
+.desc-cell {
+    color: #64748b;
 }
