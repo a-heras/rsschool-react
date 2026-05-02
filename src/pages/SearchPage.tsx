@@ -3,19 +3,32 @@ import { Main } from "../layout/Main/Main";
 import { Search } from "../components/Search/Search";
 import { CardList } from "../components/CardList/CardList";
 import { type Item } from "../types/item";
+import { loadData } from "../api/api";
 
-export class SearchPage extends Component {
-    private mockResults: Item[] = [
-        { name: "First Item", description: "Description for the first item" },
-        { name: "Second Item", description: "Description for the second item" },
-        { name: "Third Item", description: "Description for the third item" },
-    ];
+interface SearchPageState {
+    items: Item[];
+}
 
+export class SearchPage extends Component<{}, SearchPageState> {
+    constructor(props: {}){
+        super(props);
+        this.state = {
+            items: [],
+        };
+    }
+
+    componentDidMount() {
+        const saved = localStorage.getItem("searchTerm") || "";
+
+        loadData(saved).then((items) => {
+            this.setState({items})
+        });
+    }
     render() {
         return (
             <Main
                 search={<Search />}
-                results={<CardList items={this.mockResults} />}
+                results={<CardList items={this.state.items} />}
             />
         );
     }
