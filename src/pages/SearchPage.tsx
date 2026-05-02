@@ -28,14 +28,18 @@ export class SearchPage extends Component<{}, SearchPageState> {
     }
 
     handleSearch = (term: string) => {
-        if (term === this.state.lastSearchTerm) {
+        const trimmed = term.trim();
+
+        if (trimmed === this.state.lastSearchTerm) {
             return;
         }
 
-        loadData(term).then((items) => {
+        localStorage.setItem("searchTerm", trimmed)
+
+        loadData(trimmed).then((items) => {
             this.setState({
                 items,
-                lastSearchTerm: term,
+                lastSearchTerm: trimmed,
             });
         });
     };
