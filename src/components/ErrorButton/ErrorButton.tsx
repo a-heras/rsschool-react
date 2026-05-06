@@ -1,20 +1,31 @@
 import { Component } from "react";
 import "./ErrorButton.css"
 
-export class ErrorButton extends Component {
-    handleClick = () => {
-        throw new Error("Test error triggered by ErrorButton");
-    };
+interface ErrorButtonState {
+  throwError: boolean;
+}
 
-    render() {
-        return (
-            <div className="error-button-container">
-                <button 
-                    className="error-trigger-button"
-                    onClick={this.handleClick}>
-                        Throw Error
-                </button>
-            </div>
-        );
+export class ErrorButton extends Component<Record<string, never>, ErrorButtonState> {
+  constructor(props: Record<string, never>) {
+    super(props);
+    this.state = { throwError: false };
+  }
+
+  handleClick = () => {
+    this.setState({ throwError: true });
+  };
+
+  render() {
+    if (this.state.throwError) {
+      throw new Error("Test error triggered by ErrorButton");
     }
+
+    return (
+      <div className="error-button-container">
+        <button className="error-trigger-button" onClick={this.handleClick}>
+          Throw Error
+        </button>
+      </div>
+    );
+  }
 }

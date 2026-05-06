@@ -15,8 +15,8 @@ interface SearchPageState {
     error: string | null;
 }
 
-export class SearchPage extends Component<{}, SearchPageState> {
-    constructor(props: {}){
+export class SearchPage extends Component<Record<string, never>, SearchPageState> {
+    constructor(props: Record<string, never>){
         super(props);
         this.state = {
             items: [],

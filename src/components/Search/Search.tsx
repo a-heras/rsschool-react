@@ -27,7 +27,6 @@ export class Search extends Component<SearchProps, SearchState> {
     handleChange = (event: ChangeEvent<HTMLInputElement>) => {
         const value = event.target.value;
         this.setState({searchTerm: value});
-        localStorage.setItem("searchTerm", value);
     }
 
     handleSearchClick = () => {
