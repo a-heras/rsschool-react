@@ -1,21 +1,22 @@
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { SearchPage } from "./SearchPage";
-import { loadData } from "../api/api";
+import { loadDataMock, resetApiMocks } from "../test-utils/mockApi";
 
-vi.mock("../api/api", () => ({
-    loadData: vi.fn(),
-}));
+vi.mock("../api/api", async () => {
+    const { loadDataMock: mockedLoadData } = await import("../test-utils/mockApi");
+    return { loadData: mockedLoadData };
+});
 
 describe("SearchPage component", () => {
 beforeEach(() => {
     localStorage.clear();
-    vi.clearAllMocks();
+    resetApiMocks();
 });
 
 it("loads initial data on mount (success)", async () => {
     localStorage.setItem("searchTerm", "initial");
-    vi.mocked(loadData).mockResolvedValue([{ name: "A", description: "B" }]);
+    loadDataMock.mockResolvedValue([{ name: "A", description: "B" }]);
 
     render(<SearchPage />);
 
@@ -28,7 +29,7 @@ it("loads initial data on mount (success)", async () => {
 });
 
 it("shows error message when initial load fails", async () => {
-    vi.mocked(loadData).mockRejectedValue(new Error("fail"));
+    loadDataMock.mockRejectedValue(new Error("fail"));
 
     render(<SearchPage />);
 
@@ -42,7 +43,7 @@ it("shows error message when initial load fails", async () => {
 });
 
 it("calls loadData with trimmed search term when searching", async () => {
-    vi.mocked(loadData).mockResolvedValue([]);
+    loadDataMock.mockResolvedValue([]);
 
     render(<SearchPage />);
 
@@ -53,19 +54,19 @@ it("calls loadData with trimmed search term when searching", async () => {
     fireEvent.click(button);
 
     await waitFor(() => {
-    expect(loadData).toHaveBeenCalledWith("hello");
+    expect(loadDataMock).toHaveBeenCalledWith("hello");
     });
 });
 
 it("does not search if term is same as lastSearchTerm", async () => {
-    vi.mocked(loadData).mockResolvedValue([]);
+    loadDataMock.mockResolvedValue([]);
 
     localStorage.setItem("searchTerm", "same");
 
     render(<SearchPage />);
 
     await waitFor(() => {
-    expect(loadData).toHaveBeenCalledWith("same");
+    expect(loadDataMock).toHaveBeenCalledWith("same");
     });
 
     const input = screen.getByPlaceholderText("Search...");
@@ -74,11 +75,11 @@ it("does not search if term is same as lastSearchTerm", async () => {
     fireEvent.change(input, { target: { value: "same" } });
     fireEvent.click(button);
 
-    expect(loadData).toHaveBeenCalledTimes(1);
+    expect(loadDataMock).toHaveBeenCalledTimes(1);
 });
 
 it("shows loading when searching", async () => {
-    vi.mocked(loadData).mockResolvedValue([]);
+    loadDataMock.mockResolvedValue([]);
 
     render(<SearchPage />);
 
@@ -92,7 +93,7 @@ it("shows loading when searching", async () => {
 });
 
 it("shows error message when search fails", async () => {
-    vi.mocked(loadData).mockRejectedValue(new Error("fail"));
+    loadDataMock.mockRejectedValue(new Error("fail"));
 
     render(<SearchPage />);
 
