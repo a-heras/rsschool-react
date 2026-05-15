@@ -1,32 +1,26 @@
 import {type Item} from "../types/item"
+import { ITEMS_PER_PAGE } from "../config/pagination";
 
-export function loadData(searchTerm:string): Promise<Item[]> {
-    return new Promise((resolve, reject) => {
+export async function loadData(searchTerm:string, page: number, limit = ITEMS_PER_PAGE): Promise<{ items: Item[]; total: number }> {
+    const res = await fetch("https://jsonplaceholder.typicode.com/posts");
+    const data = await res.json();
 
-        setTimeout(() => {
-            if (Math.random() < 0.4) {
-                reject(new Error("Server error: failed to load data"));
-                return;
-            }
-            
-            const allItems: Item[] = [
-                { name: "First Item", description: "Description for the first item" },
-                { name: "Second Item", description: "Description for the second item" },
-                { name: "Third Item", description: "Description for the third item" },
-                { name: "First Item", description: "Description for the first item" },
-                { name: "Second Item", description: "Description for the second item" },
-                { name: "Third Item", description: "Description for the third item" },
-            ];
+    const mapped: Item[] = data.map((post: any) => ({
+        name: post.title,
+        description: post.body,
+    }));
 
-            if(!searchTerm) {
-                resolve(allItems);
-            } else {
-                resolve(
-                    allItems.filter((item) => 
-                        item.name.toLowerCase().includes(searchTerm.toLowerCase())
-                    )
-                );
-            }
-        }, 500);
-    });
+    const filtered = !searchTerm
+    ? mapped
+    : mapped.filter((item) =>
+        item.name.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+
+    const total = filtered.length;
+    const start = (page - 1) * limit;
+    const end = start + limit;
+
+    const pageItems = filtered.slice(start, end);
+
+    return { items: pageItems, total };
 }

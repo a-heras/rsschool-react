@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>12/12</span>
+                <span class='fraction'>10/10</span>
             </div>
         
             
@@ -39,14 +39,14 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>5/5</span>
+                <span class='fraction'>4/4</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>12/12</span>
+                <span class='fraction'>10/10</span>
             </div>
         
             
@@ -100,21 +100,7 @@
 <a name='L35'></a><a href='#L35'>35</a>
 <a name='L36'></a><a href='#L36'>36</a>
 <a name='L37'></a><a href='#L37'>37</a>
-<a name='L38'></a><a href='#L38'>38</a>
-<a name='L39'></a><a href='#L39'>39</a>
-<a name='L40'></a><a href='#L40'>40</a>
-<a name='L41'></a><a href='#L41'>41</a>
-<a name='L42'></a><a href='#L42'>42</a>
-<a name='L43'></a><a href='#L43'>43</a>
-<a name='L44'></a><a href='#L44'>44</a>
-<a name='L45'></a><a href='#L45'>45</a>
-<a name='L46'></a><a href='#L46'>46</a>
-<a name='L47'></a><a href='#L47'>47</a>
-<a name='L48'></a><a href='#L48'>48</a>
-<a name='L49'></a><a href='#L49'>49</a>
-<a name='L50'></a><a href='#L50'>50</a>
-<a name='L51'></a><a href='#L51'>51</a>
-<a name='L52'></a><a href='#L52'>52</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L38'></a><a href='#L38'>38</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -122,37 +108,24 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">41x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">41x</span>
+<span class="cline-any cline-yes">14x</span>
+<span class="cline-any cline-yes">14x</span>
+<span class="cline-any cline-yes">4x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">13x</span>
-<span class="cline-any cline-yes">13x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">13x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">13x</span>
-<span class="cline-any cline-yes">3x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">6x</span>
-<span class="cline-any cline-yes">6x</span>
+<span class="cline-any cline-yes">41x</span>
 <span class="cline-any cline-yes">6x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">41x</span>
 <span class="cline-any cline-yes">5x</span>
-<span class="cline-any cline-yes">5x</span>
-<span class="cline-any cline-yes">5x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">36x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">41x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -164,58 +137,43 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import { Component, type ChangeEvent } from "react";
-import "./Search.css"
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import { useState, useEffect, type ChangeEvent } from "react";
+import "./Search.css";
+&nbsp;
 interface SearchProps {
     onSearch: (term: string) =&gt; void;
 }
 &nbsp;
-interface SearchState {
-    searchTerm: string;
-}
-&nbsp;
-export class Search extends Component&lt;SearchProps, SearchState&gt; {
-    constructor(props: SearchProps) {
-        super(props);
-        this.state = {
-            searchTerm: "",
-        }
-    }
-&nbsp;
-    componentDidMount() {
-        const saved = localStorage.getItem("searchTerm");
-&nbsp;
-        if(saved) {
-            this.setState({searchTerm: saved});
-        }
-    }
+export function Search({onSearch}: SearchProps) {
+    const [searchTerm, setSearchTerm] = useState("");
     
-    handleChange = (event: ChangeEvent&lt;HTMLInputElement&gt;) =&gt; {
-        const value = event.target.value;
-        this.setState({searchTerm: value});
+    useEffect(() =&gt; {
+        const saved = localStorage.getItem("searchTerm");
+        if(saved) {
+            setSearchTerm(saved);
+        }
+    }, []);
+    
+    const handleChange = (event: ChangeEvent&lt;HTMLInputElement&gt;) =&gt; {
+        setSearchTerm(event.target.value);
     }
 &nbsp;
-    handleSearchClick = () =&gt; {
-        const trimmed = this.state.searchTerm.trim();
-        this.props.onSearch(trimmed);
+    const handleSearchClick = () =&gt; {
+        onSearch(searchTerm.trim());
     }
 &nbsp;
-    render() {
-        return (
-            &lt;div className="search-container"&gt;
-                &lt;input
-                    type="text"
-                    className="search-input"
-                    value={this.state.searchTerm}
-                    onChange={this.handleChange}
-                    placeholder="Search..."
-                /&gt;
-                &lt;button className="search-button" onClick={this.handleSearchClick}&gt;Search&lt;/button&gt;
-            &lt;/div&gt;
-        );
-    }
-&nbsp;
+    return (
+        &lt;div className="search-container"&gt;
+            &lt;input
+                type="text"
+                className="search-input"
+                value={searchTerm}
+                onChange={handleChange}
+                placeholder="Search..."
+            /&gt;
+            &lt;button className="search-button" onClick={handleSearchClick}&gt;Search&lt;/button&gt;
+        &lt;/div&gt;
+    );
 }</pre></td></tr></table></pre>
 
                 <div class='push'></div><!-- for sticky footer -->
@@ -223,7 +181,7 @@ export class Search extends Component&lt;SearchProps, SearchState&gt; {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2026-05-11T15:10:59.598Z
+                at 2026-05-15T10:49:35.706Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>
