@@ -5,6 +5,7 @@ import { DetailsOutlet } from "./pages/DetailsPage/DetailsOutlet";
 import { AboutPage } from "./pages/AboutPage/AboutPage";
 import { Header } from "./layout/Header/Header";
 import { Main } from "./layout/Main/Main";
+import { NotFoundPage } from "./pages/NotFoundPage/NotFoundPage";
 
 export function App() {
     return (
@@ -18,6 +19,8 @@ export function App() {
                     </Route>
 
                     <Route path="/about" element={<AboutPage />} />
+
+                    <Route path="*" element={<NotFoundPage />} />
                 </Routes>
             </Main>
         </ErrorBoundary>
