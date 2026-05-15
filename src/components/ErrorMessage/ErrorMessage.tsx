@@ -1,12 +1,11 @@
-import { Component } from "react";
 import "./ErrorMessage.css";
 
 interface ErrorMessageProps {
     message: string;
 }
 
-export class ErrorMessage extends Component<ErrorMessageProps> {
-    render() {
-        return <div className="error-message">{this.props.message}</div>;
-    }
+export function ErrorMessage({message}: ErrorMessageProps) {
+    return(
+        <div className="error-message">{message}</div>
+    );
 }

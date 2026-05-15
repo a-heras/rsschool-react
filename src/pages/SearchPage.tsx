@@ -1,4 +1,4 @@
-import { Component } from "react";
+import { useState, useEffect } from "react";
 import { Main } from "../layout/Main/Main";
 import { Search } from "../components/Search/Search";
 import { CardList } from "../components/CardList/CardList";
@@ -8,91 +8,70 @@ import { Loading } from "../components/Loading/Loading";
 import { ErrorMessage } from "../components/ErrorMessage/ErrorMessage";
 import { ErrorButton } from "../components/ErrorButton/ErrorButton";
 
-interface SearchPageState {
-    items: Item[];
-    lastSearchTerm: string;
-    loading: boolean;
-    error: string | null;
-}
+export function SearchPage() {
+    const [items, setItems] = useState<Item[]>([]);
+    const [lastSearchTerm, setLastSearchTerm] = useState("");
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
 
-export class SearchPage extends Component<Record<string, never>, SearchPageState> {
-    constructor(props: Record<string, never>){
-        super(props);
-        this.state = {
-            items: [],
-            lastSearchTerm: "",
-            loading: false,
-            error: null,
-        };
-    }
-
-    componentDidMount() {
+    useEffect(() => {
         const saved = localStorage.getItem("searchTerm") || "";
 
-        this.setState({ loading: true, error: null });
+        if (saved === "") return;
 
-        loadData(saved).then((items) => {
-            this.setState({
-                items,
-                lastSearchTerm: saved,
-                loading: false,
-                error: null,
-            });
-        })
-        .catch(() => {
-            this.setState({
-                loading: false,
-                error: "Failed to load data. Please try again.",
-            });
-        });
-    }
+        setLoading(true);
+        setError(null);
 
-    handleSearch = (term: string) => {
+        loadData(saved)
+            .then((items) => {
+                setItems(items);
+                setLastSearchTerm(saved);
+                setLoading(false);
+            })
+            .catch(() => {
+                setLoading(false);
+                setError("Failed to load data. Please try again.");
+            });
+        }, []);
+    
+    const handleSearch = (term: string) => {
         const trimmed = term.trim();
 
-        if (trimmed === this.state.lastSearchTerm) {
-            return;
-        }
+        if (trimmed === lastSearchTerm) return;
 
-        this.setState({loading: true, error: null});
-        localStorage.setItem("searchTerm", trimmed)
+        setLoading(true);
+        setError(null);
+        localStorage.setItem("searchTerm", trimmed);
 
-        loadData(trimmed).then((items) => {
-            this.setState({
-                items,
-                lastSearchTerm: trimmed,
-                loading: false,
-                error: null,
+        loadData(trimmed)
+            .then((items) => {
+                setItems(items);
+                setLastSearchTerm(trimmed);
+                setLoading(false);
+            })
+            .catch(() => {
+                setLoading(false);
+                setError("Failed to load data. Please try again.");
             });
-        })
-        .catch(() => {
-            this.setState({
-                loading: false,
-                error: "Failed to load data. Please try again.",
-            });
-        });
-    };
+        };
+    return (
+        <Main
+            search={<Search onSearch={handleSearch} />}
+            results={
+                <div>
+                    {error ? (
+                        <ErrorMessage message={error} />
+                    ) : loading ? (
+                        <Loading />
+                    ) : (
+                        <CardList items={items} />
+                    )}
 
-    render() {
-        return (
-            <Main
-                search={<Search onSearch={this.handleSearch} />}
-                results={
                     <div>
-                        {this.state.error ? (
-                            <ErrorMessage message={this.state.error} />
-                        ) : this.state.loading ? (
-                            <Loading />
-                        ) : (
-                            <CardList items={this.state.items} />
-                        )}
-
-                        <div>
-                            <ErrorButton />
-                        </div>
+                        <ErrorButton />
                     </div>
-                }
-            />
-        );
-    }
+                </div>
+            }
+        />
+    );
 }

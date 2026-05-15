@@ -29,6 +29,7 @@ it("loads initial data on mount (success)", async () => {
 });
 
 it("shows error message when initial load fails", async () => {
+    localStorage.setItem("searchTerm", "initial");
     loadDataMock.mockRejectedValue(new Error("fail"));
 
     render(<SearchPage />);
@@ -40,6 +41,14 @@ it("shows error message when initial load fails", async () => {
         screen.getByText("Failed to load data. Please try again.")
     ).toBeInTheDocument();
     });
+});
+
+it("does not call loadData on mount when localStorage is empty", () => {
+    loadDataMock.mockResolvedValue([]);
+
+    render(<SearchPage />);
+
+    expect(loadDataMock).not.toHaveBeenCalled();
 });
 
 it("calls loadData with trimmed search term when searching", async () => {

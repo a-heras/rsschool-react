@@ -1,4 +1,4 @@
-import { Component, type ReactNode } from "react";
+import { type ReactNode } from "react";
 import "./Main.css";
 
 interface MainProps {
@@ -6,18 +6,16 @@ interface MainProps {
     results: ReactNode;
 }
 
-export class Main extends Component<MainProps> {
-    render() {
-        return (
+export function Main({search, results}: MainProps) {
+    return (
         <div className="main-container">
             <div className="top-controls">
-                {this.props.search}
+                {search}
             </div>
 
             <div className="results-section">
-                {this.props.results}
+                {results}
             </div>
         </div>
-        );
-    }
+    );
 }
