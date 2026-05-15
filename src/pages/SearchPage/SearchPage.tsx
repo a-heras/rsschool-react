@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Outlet, useSearchParams } from "react-router-dom";
-import { Main } from "../../layout/Main/Main";
 import { Search } from "../../components/Search/Search";
+import "../../layout/Main/Main.css";
 import { CardList } from "../../components/CardList/CardList";
 import { type Item } from "../../types/item";
 import { loadData } from "../../api/api";
@@ -82,9 +82,12 @@ export function SearchPage() {
     };
 
     return (
-        <Main
-            search={<Search onSearch={handleSearch} />}
-            results={
+        <>
+            <div className="top-controls">
+                <Search onSearch={handleSearch} />
+            </div>
+
+            <div className="results-section">
                 <div className={detailsId ? "split split--open" : "split"}>
                     <div className="split-left">
                         {error ? (
@@ -118,7 +121,7 @@ export function SearchPage() {
                         </div>
                     )}
                 </div>
-            }
-        />
+            </div>
+        </>
     );
 }
