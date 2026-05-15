@@ -3,9 +3,10 @@ import { Card } from "../Card/Card";
 import "./CardList.css"
 interface CardListProps {
     items: Item[];
+    onItemClick: (id: string) => void;
 }
 
-export function CardList({items}: CardListProps) {
+export function CardList({items, onItemClick}: CardListProps) {
     return (
         <table className="results-table">
             <thead>
@@ -15,8 +16,16 @@ export function CardList({items}: CardListProps) {
                 </tr>
             </thead>
             <tbody>
-                {items.map((item, index) => (
-                    <Card key={index} item={item} />
+                {items.map((item) => (
+                    <Card
+                        key={item.id}
+                        item={item}
+                        onClick={() => {
+                            if (item.id != null) {
+                                onItemClick(String(item.id));
+                            }
+                        }}
+                    />
                 ))}
             </tbody>
         </table>

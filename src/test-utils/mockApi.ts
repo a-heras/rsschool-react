@@ -8,8 +8,12 @@ type LoadDataFn = (
     page: number
 ) => Promise<LoadDataResult>;
 
+type LoadDetailsFn = (id: string) => Promise<Item>;
+
 export const loadDataMock = vi.fn<LoadDataFn>();
+export const loadDetailsMock = vi.fn<LoadDetailsFn>();
 
 export const resetApiMocks = () => {
     loadDataMock.mockReset();
+    loadDetailsMock.mockReset();
 };
