@@ -56,7 +56,7 @@ describe("CardList component", () => {
 
     it("does not call onItemClick when item id is null", () => {
         const itemsWithoutId = [
-            { id: null, name: "No id", description: "Desc" } as Item,
+            { id: null, name: "No id", description: "Desc" } as unknown as Item,
         ];
 
         render(<CardList items={itemsWithoutId} onItemClick={onItemClick} />);
