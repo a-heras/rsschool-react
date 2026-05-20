@@ -10,12 +10,14 @@ import { ErrorMessage } from "../../components/ErrorMessage/ErrorMessage";
 import { ErrorButton } from "../../components/ErrorButton/ErrorButton";
 import { Pagination } from "../../components/Pagination/Pagination";
 import { ITEMS_PER_PAGE } from "../../config/pagination";
+import { useLocalStorage } from "../../hooks/useLocalStorage";
 import "./SearchPage.css";
 
 export function SearchPage() {
     const [items, setItems] = useState<Item[]>([]);
-    const [lastSearchTerm, setLastSearchTerm] = useState(
-        () => localStorage.getItem("searchTerm") || ""
+    const [lastSearchTerm, setLastSearchTerm] = useLocalStorage(
+        "searchTerm",
+        ""
     );
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -45,7 +47,6 @@ export function SearchPage() {
 
         if (trimmed === lastSearchTerm) return;
 
-        localStorage.setItem("searchTerm", trimmed);
         setLastSearchTerm(trimmed);
 
         setSearchParams({ page: "1" });
@@ -84,7 +85,7 @@ export function SearchPage() {
     return (
         <>
             <div className="top-controls">
-                <Search onSearch={handleSearch} />
+                <Search savedTerm={lastSearchTerm} onSearch={handleSearch} />
             </div>
 
             <div className="results-section">
