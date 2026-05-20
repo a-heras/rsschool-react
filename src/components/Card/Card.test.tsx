@@ -5,8 +5,9 @@ import type { Item } from "../../types/item";
 
 describe("Card component", () => {
     const item: Item = {
+        id: 1,
         name: "Test Name",
-        description: "Test Description"
+        description: "Test Description",
     };
 
     it("renders table row", () => {

@@ -1,0 +1,42 @@
+.split {
+    display: flex;
+    gap: 0;
+    align-items: flex-start;
+}
+
+.split--open .split-left {
+    flex: 1;
+}
+
+.split--open .split-right {
+    flex: 1;
+    min-width: 0;
+    border-left: 1px solid #e2e8f0;
+    padding-left: 28px;
+    position: relative;
+    background: #fafbfc;
+    margin-top: 60px;
+}
+
+.split-left {
+    width: 100%;
+}
+
+.close-btn {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 32px;
+    height: 32px;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    background: #fff;
+    font-size: 20px;
+    cursor: pointer;
+    color: #64748b;
+}
+
+.close-btn:hover {
+    background: #f1f5f9;
+    color: #334155;
+}

@@ -14,10 +14,8 @@ describe("Search component", () => {
         expect(screen.getByText("Search")).toBeInTheDocument();
     });
 
-    it("loads saved search term from localStorage on mount", () => {
-        localStorage.setItem("searchTerm", "SavedTerm");
-
-        render(<Search onSearch={() => {}} />);
+    it("loads saved search term from parent on mount", () => {
+        render(<Search onSearch={() => {}} savedTerm="SavedTerm" />);
 
         expect(screen.getByDisplayValue("SavedTerm")).toBeInTheDocument();
     });
