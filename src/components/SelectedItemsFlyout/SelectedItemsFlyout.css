@@ -1,0 +1,50 @@
+.flyout {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 24px;
+    background: var(--color-bg-dark);
+    border-top: 2px solid var(--accent);
+    box-shadow: var(--shadow-flyout);
+    overflow: hidden;
+}
+
+.flyout::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: linear-gradient(
+        90deg,
+        transparent 0%,
+        rgba(160, 248, 29, 0.1) 40%,
+        rgba(160, 248, 29, 0.22) 50%,
+        rgba(160, 248, 29, 0.1) 60%,
+        transparent 100%
+    );
+    animation: sheen 6.5s ease-in-out infinite;
+}
+
+.flyout-count {
+    position: relative;
+    z-index: 1;
+    margin: 0;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    text-shadow: var(--glow);
+}
+
+.flyout-actions {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    gap: 12px;
+}

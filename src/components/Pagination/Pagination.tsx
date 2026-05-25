@@ -10,21 +10,23 @@ export function Pagination({page, maxPage, onPageChange}: PaginationProps) {
     return (
         <div className="pagination">
             <button
-                className="pagination-btn"
+                type="button"
+                className="btn"
                 disabled={page === 1}
                 onClick={() => onPageChange(page - 1)}
             >
-                ← Prev
+                Prev
             </button>
 
             <span className="pagination-page">Page {page}</span>
 
             <button
-                className="pagination-btn"
+                type="button"
+                className="btn"
                 disabled={page >= maxPage}
                 onClick={() => onPageChange(page + 1)}
             >
-                Next →
+                Next
             </button>
         </div>
     );

@@ -9,7 +9,9 @@ import { ErrorButton } from "../../components/ErrorButton/ErrorButton";
 import { Pagination } from "../../components/Pagination/Pagination";
 import { ITEMS_PER_PAGE } from "../../config/pagination";
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
-import { fetchItems, setSearchTerm, toggleItemSelection } from "../../store/searchSlice";
+import { fetchItems, setSearchTerm, toggleItemSelection, clearSelectedItems } from "../../store/searchSlice";
+import { SelectedItemsFlyout } from "../../components/SelectedItemsFlyout/SelectedItemsFlyout";
+import { downloadSelectedItemsCsv } from "../../utils/downloadSelectedItemsCsv";
 import "./SearchPage.css";
 
 
@@ -68,6 +70,10 @@ export function SearchPage() {
         setSearchParams({ page: String(page) });
     };
 
+    const handleDownload = () => {
+        downloadSelectedItemsCsv(selectedItems, window.location.origin);
+    };
+
     const handlePageChange = (newPage: number) => {
         if (detailsId) {
             setSearchParams({ page: String(newPage), details: detailsId });
@@ -82,46 +88,55 @@ export function SearchPage() {
                 <Search savedTerm={searchTerm} onSearch={handleSearch} />
             </div>
 
-            <div className="results-section">
-                <div className={detailsId ? "split split--open" : "split"}>
-                    <div className="split-left">
-                        {error ? (
-                            <ErrorMessage message={error} />
-                        ) : loading ? (
-                            <Loading />
-                        ) : (
-                            <CardList
-                                items={items}
-                                selectedItems={selectedItems}
-                                onToggleSelect={(item) => dispatch(toggleItemSelection(item))}
-                                onOpenDetails={openDetails}
-                            />
-                        )}
+            <div className="results-section panel">
+                <div className="results-section__body">
+                    <div className={detailsId ? "split split--open" : "split"}>
+                        <div className="split-left">
+                            {error ? (
+                                <ErrorMessage message={error} />
+                            ) : loading ? (
+                                <Loading />
+                            ) : (
+                                <CardList
+                                    items={items}
+                                    selectedItems={selectedItems}
+                                    onToggleSelect={(item) =>
+                                        dispatch(toggleItemSelection(item))
+                                    }
+                                    onOpenDetails={openDetails}
+                                />
+                            )}
 
-                        {!loading && !error && total > 0 && (
-                            <Pagination
-                                page={page}
-                                maxPage={maxPage}
-                                onPageChange={handlePageChange}
-                            />
-                        )}
-                        <ErrorButton />
-                    </div>
-                    {detailsId && (
-                        <div className="split-right">
+                            {!loading && !error && total > 0 && (
+                                <Pagination
+                                    page={page}
+                                    maxPage={maxPage}
+                                    onPageChange={handlePageChange}
+                                />
+                            )}
+                            <ErrorButton />
+                        </div>
+                        {detailsId && (
+                            <div className="split-right">
                             <button
                                 type="button"
-                                className="close-btn"
+                                className="btn btn--on-dark close-btn"
                                 onClick={closeDetails}
                                 aria-label="Close details"
                             >
-                                ×
+                                <span aria-hidden="true">×</span>
                             </button>
-                            <Outlet />
-                        </div>
-                    )}
+                                <Outlet />
+                            </div>
+                        )}
+                    </div>
                 </div>
             </div>
+            <SelectedItemsFlyout
+                count={selectedItems.length}
+                onUnselectAll={() => dispatch(clearSelectedItems())}
+                onDownload={handleDownload}
+            />
         </>
     );
 }

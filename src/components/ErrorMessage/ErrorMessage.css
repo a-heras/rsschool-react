@@ -1,9 +1,14 @@
 .error-message {
-  padding: 16px;
-  background: #ffe5e5;
-  color: #a30000;
-  border: 1px solid #ffb3b3;
-  border-radius: var(--radius-md);
+  padding: 14px 16px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  line-height: 1.5;
+  background: var(--color-error-soft);
+  color: var(--color-error);
+  border: 1px solid var(--color-error-border);
+  border-left: 3px solid var(--color-error);
+  border-radius: var(--radius-sm);
   margin-bottom: 12px;
-  font-size: 16px;
 }

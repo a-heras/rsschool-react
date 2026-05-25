@@ -10,7 +10,7 @@ describe("Pagination component", () => {
             <Pagination page={1} maxPage={5} onPageChange={onPageChange} />
         );
 
-        const prev = screen.getByText("← Prev");
+        const prev = screen.getByText("Prev");
         expect(prev).toBeDisabled();
     });
 
@@ -21,7 +21,7 @@ describe("Pagination component", () => {
             <Pagination page={5} maxPage={5} onPageChange={onPageChange} />
         );
 
-        const next = screen.getByText("Next →");
+        const next = screen.getByText("Next");
         expect(next).toBeDisabled();
     });
 
@@ -32,7 +32,7 @@ describe("Pagination component", () => {
             <Pagination page={3} maxPage={5} onPageChange={onPageChange} />
         );
 
-        const prev = screen.getByText("← Prev");
+        const prev = screen.getByText("Prev");
         fireEvent.click(prev);
 
         expect(onPageChange).toHaveBeenCalledWith(2);
@@ -45,7 +45,7 @@ describe("Pagination component", () => {
             <Pagination page={3} maxPage={5} onPageChange={onPageChange} />
         );
 
-        const next = screen.getByText("Next →");
+        const next = screen.getByText("Next");
         fireEvent.click(next);
 
         expect(onPageChange).toHaveBeenCalledWith(4);

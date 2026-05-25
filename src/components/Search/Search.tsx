@@ -30,7 +30,7 @@ export function Search({ onSearch, savedTerm = "" }: SearchProps) {
                 onChange={handleChange}
                 placeholder="Search..."
             />
-            <button className="search-button" onClick={handleSearchClick}>
+            <button type="button" className="btn" onClick={handleSearchClick}>
                 Search
             </button>
         </div>

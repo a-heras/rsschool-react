@@ -17,6 +17,13 @@ vi.mock("../../api/api", async () => {
     return { loadData: mockedLoadData, loadDetails: mockedLoadDetails };
 });
 
+const downloadSelectedItemsCsvMock = vi.fn();
+
+vi.mock("../../utils/downloadSelectedItemsCsv", () => ({
+    downloadSelectedItemsCsv: (...args: unknown[]) =>
+        downloadSelectedItemsCsvMock(...args),
+}));
+
 const routes = [
     {
         path: "/",
@@ -47,6 +54,7 @@ describe("SearchPage component", () => {
         localStorage.clear();
         resetApiMocks();
         loadDataMock.mockResolvedValue(emptyLoadResult);
+        downloadSelectedItemsCsvMock.mockClear();
     });
 
     it("loads initial data on mount (success)", async () => {
@@ -168,7 +176,7 @@ describe("SearchPage component", () => {
             expect(loadDataMock).toHaveBeenCalled();
         });
 
-        expect(screen.queryByText("Next →")).not.toBeInTheDocument();
+        expect(screen.queryByText("Next")).not.toBeInTheDocument();
     });
 
     it("loads next page when pagination Next is clicked", async () => {
@@ -180,10 +188,10 @@ describe("SearchPage component", () => {
         renderWithRouter();
 
         await waitFor(() => {
-            expect(screen.getByText("Next →")).toBeInTheDocument();
+            expect(screen.getByText("Next")).toBeInTheDocument();
         });
 
-        fireEvent.click(screen.getByText("Next →"));
+        fireEvent.click(screen.getByText("Next"));
 
         await waitFor(() => {
             expect(loadDataMock).toHaveBeenCalledWith("", 2);
@@ -276,10 +284,10 @@ describe("SearchPage component", () => {
         const router = renderWithRouter("/?page=1&details=1");
 
         await waitFor(() => {
-            expect(screen.getByText("Next →")).toBeInTheDocument();
+            expect(screen.getByText("Next")).toBeInTheDocument();
         });
 
-        fireEvent.click(screen.getByText("Next →"));
+        fireEvent.click(screen.getByText("Next"));
 
         await waitFor(() => {
             const search = router.state.location.search;
@@ -288,5 +296,73 @@ describe("SearchPage component", () => {
         });
 
         expect(loadDataMock).toHaveBeenCalledWith("", 2);
+    });
+
+    it("shows flyout with count when an item is selected", async () => {
+        loadDataMock.mockResolvedValue({
+            items: [listItem],
+            total: 1,
+        });
+
+        renderWithRouter();
+
+        await waitFor(() => {
+            expect(screen.getByText("Item 1")).toBeInTheDocument();
+        });
+
+        expect(
+            screen.queryByRole("region", { name: "Selected items" })
+        ).not.toBeInTheDocument();
+
+        fireEvent.click(screen.getByRole("checkbox", { name: "Select Item 1" }));
+
+        expect(
+            screen.getByRole("region", { name: "Selected items" })
+        ).toBeInTheDocument();
+        expect(screen.getByText("1 item selected")).toBeInTheDocument();
+    });
+
+    it("hides flyout and clears selection when Unselect all is clicked", async () => {
+        loadDataMock.mockResolvedValue({
+            items: [listItem],
+            total: 1,
+        });
+
+        renderWithRouter();
+
+        await waitFor(() => {
+            expect(screen.getByText("Item 1")).toBeInTheDocument();
+        });
+
+        fireEvent.click(screen.getByRole("checkbox", { name: "Select Item 1" }));
+        expect(screen.getByText("1 item selected")).toBeInTheDocument();
+
+        fireEvent.click(screen.getByRole("button", { name: "Unselect all" }));
+
+        expect(
+            screen.queryByRole("region", { name: "Selected items" })
+        ).not.toBeInTheDocument();
+        expect(screen.getByRole("checkbox", { name: "Select Item 1" })).not.toBeChecked();
+    });
+
+    it("calls downloadSelectedItemsCsv when Download is clicked", async () => {
+        loadDataMock.mockResolvedValue({
+            items: [listItem],
+            total: 1,
+        });
+
+        renderWithRouter();
+
+        await waitFor(() => {
+            expect(screen.getByText("Item 1")).toBeInTheDocument();
+        });
+
+        fireEvent.click(screen.getByRole("checkbox", { name: "Select Item 1" }));
+        fireEvent.click(screen.getByRole("button", { name: "Download" }));
+
+        expect(downloadSelectedItemsCsvMock).toHaveBeenCalledWith(
+            [listItem],
+            window.location.origin
+        );
     });
 });
