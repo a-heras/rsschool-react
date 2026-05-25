@@ -1,9 +1,9 @@
-import { useEffect, useState } from "react";
-import { loadDetails } from "../../api/api";
-import { type Item } from "../../types/item";
-import { Loading } from "../../components/Loading/Loading";
-import { ErrorMessage } from "../../components/ErrorMessage/ErrorMessage";
-import "./DetailsPage.css";
+import { useEffect, useState } from 'react';
+import { loadDetails } from '../../api/api';
+import { type Item } from '../../types/item';
+import { Loading } from '../../components/Loading/Loading';
+import { ErrorMessage } from '../../components/ErrorMessage/ErrorMessage';
+import './DetailsPage.css';
 
 interface DetailsPageProps {
     itemId: string;
@@ -15,17 +15,13 @@ export function DetailsPage({ itemId }: DetailsPageProps) {
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
-        setLoading(true);
-        setError(null);
-        setItem(null);
-
         loadDetails(itemId)
             .then((data) => {
                 setItem(data);
                 setLoading(false);
             })
             .catch(() => {
-                setError("Failed to load details.");
+                setError('Failed to load details.');
                 setLoading(false);
             });
     }, [itemId]);

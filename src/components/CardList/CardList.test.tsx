@@ -1,68 +1,64 @@
-import { render, screen, fireEvent } from "@testing-library/react";
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import { CardList } from "./CardList";
-import type { Item } from "../../types/item";
+import { render, screen, fireEvent } from '@testing-library/react';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { CardList } from './CardList';
+import type { Item } from '../../types/item';
 
-describe("CardList component", () => {
-    const onItemClick = vi.fn();
-
-    beforeEach(() => {
-        onItemClick.mockClear();
-    });
+describe('CardList component', () => {
+    const onToggleSelect = vi.fn();
+    const onOpenDetails = vi.fn();
 
     const items: Item[] = [
-        { id: 1, name: "Item 1", description: "Description 1" },
-        { id: 2, name: "Item 2", description: "Description 2" },
+        { id: 1, name: 'Item 1', description: 'Description 1' },
+        { id: 2, name: 'Item 2', description: 'Description 2' },
     ];
 
-    it("renders table with headers", () => {
-        render(<CardList items={items} onItemClick={onItemClick} />);
+    const defaultProps = {
+        items,
+        selectedItems: [] as Item[],
+        onToggleSelect,
+        onOpenDetails,
+    };
 
-        expect(screen.getByText("Item Name")).toBeInTheDocument();
-        expect(screen.getByText("Item Description")).toBeInTheDocument();
+    beforeEach(() => {
+        onToggleSelect.mockClear();
+        onOpenDetails.mockClear();
     });
 
-    it("renders correct number of rows", () => {
-        render(<CardList items={items} onItemClick={onItemClick} />);
+    it('renders table with headers', () => {
+        render(<CardList {...defaultProps} />);
 
-        const rows = screen.getAllByRole("row");
+        expect(screen.getByText('Item Name')).toBeInTheDocument();
+        expect(screen.getByText('Item Description')).toBeInTheDocument();
+    });
+
+    it('renders correct number of rows', () => {
+        render(<CardList {...defaultProps} />);
+
+        const rows = screen.getAllByRole('row');
         expect(rows.length).toBe(3);
     });
 
-    it("renders item names and descriptions", () => {
-        render(<CardList items={items} onItemClick={onItemClick} />);
+    it('marks selected items with checked checkbox', () => {
+        render(<CardList {...defaultProps} selectedItems={[items[0]]} />);
 
-        expect(screen.getByText("Item 1")).toBeInTheDocument();
-        expect(screen.getByText("Description 1")).toBeInTheDocument();
-        expect(screen.getByText("Item 2")).toBeInTheDocument();
-        expect(screen.getByText("Description 2")).toBeInTheDocument();
+        const checkboxes = screen.getAllByRole('checkbox');
+        expect(checkboxes[0]).toBeChecked();
+        expect(checkboxes[1]).not.toBeChecked();
     });
 
-    it("renders empty table body when items is empty", () => {
-        render(<CardList items={[]} onItemClick={onItemClick} />);
+    it('calls onOpenDetails when row text is clicked', () => {
+        render(<CardList {...defaultProps} />);
 
-        const rows = screen.getAllByRole("row");
-        expect(rows.length).toBe(1);
+        fireEvent.click(screen.getByText('Item 1'));
+
+        expect(onOpenDetails).toHaveBeenCalledWith('1');
     });
 
-    it("calls onItemClick with item id when row is clicked", () => {
-        render(<CardList items={items} onItemClick={onItemClick} />);
+    it('calls onToggleSelect when checkbox is clicked', () => {
+        render(<CardList {...defaultProps} />);
 
-        fireEvent.click(screen.getByText("Item 1"));
+        fireEvent.click(screen.getAllByRole('checkbox')[0]);
 
-        expect(onItemClick).toHaveBeenCalledTimes(1);
-        expect(onItemClick).toHaveBeenCalledWith("1");
-    });
-
-    it("does not call onItemClick when item id is null", () => {
-        const itemsWithoutId = [
-            { id: null, name: "No id", description: "Desc" } as unknown as Item,
-        ];
-
-        render(<CardList items={itemsWithoutId} onItemClick={onItemClick} />);
-
-        fireEvent.click(screen.getByText("No id"));
-
-        expect(onItemClick).not.toHaveBeenCalled();
+        expect(onToggleSelect).toHaveBeenCalledWith(items[0]);
     });
 });

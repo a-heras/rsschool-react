@@ -1,17 +1,13 @@
-import { useState, useEffect, type ChangeEvent } from "react";
-import "./Search.css";
+import { useState, type ChangeEvent } from 'react';
+import './Search.css';
 
 interface SearchProps {
     onSearch: (term: string) => void;
     savedTerm?: string;
 }
 
-export function Search({ onSearch, savedTerm = "" }: SearchProps) {
+export function Search({ onSearch, savedTerm = '' }: SearchProps) {
     const [searchTerm, setSearchTerm] = useState(savedTerm);
-
-    useEffect(() => {
-        setSearchTerm(savedTerm);
-    }, [savedTerm]);
 
     const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
         setSearchTerm(event.target.value);
@@ -30,7 +26,7 @@ export function Search({ onSearch, savedTerm = "" }: SearchProps) {
                 onChange={handleChange}
                 placeholder="Search..."
             />
-            <button className="search-button" onClick={handleSearchClick}>
+            <button type="button" className="btn" onClick={handleSearchClick}>
                 Search
             </button>
         </div>

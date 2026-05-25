@@ -8,29 +8,29 @@ import tseslint from 'typescript-eslint';
 import { defineConfig, globalIgnores } from 'eslint/config';
 
 export default defineConfig([
-  globalIgnores(['dist']),
+    globalIgnores(['dist', 'coverage']),
 
-  {
-    files: ['**/*.{ts,tsx}'],
+    {
+        files: ['**/*.{ts,tsx}'],
 
-    extends: [
-      js.configs.recommended,
-      tseslint.configs.recommended,
-      reactHooks.configs.flat.recommended,
-      reactRefresh.configs.vite,
-      reactPlugin.configs.flat.recommended,
-      reactPlugin.configs.flat['jsx-runtime'],
-      eslintConfigPrettier,
-    ],
+        extends: [
+            js.configs.recommended,
+            tseslint.configs.recommended,
+            reactHooks.configs.flat.recommended,
+            reactRefresh.configs.vite,
+            reactPlugin.configs.flat.recommended,
+            reactPlugin.configs.flat['jsx-runtime'],
+            eslintConfigPrettier,
+        ],
 
-    languageOptions: {
-      globals: globals.browser,
+        languageOptions: {
+            globals: globals.browser,
+        },
+
+        settings: {
+            react: {
+                version: 'detect',
+            },
+        },
     },
-
-    settings: {
-      react: {
-        version: 'detect',
-      },
-    },
-  },
 ]);

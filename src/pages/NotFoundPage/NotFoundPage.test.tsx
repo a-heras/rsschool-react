@@ -1,10 +1,10 @@
-import { describe, it, expect } from "vitest";
-import { render, screen } from "@testing-library/react";
-import { MemoryRouter } from "react-router-dom";
-import { NotFoundPage } from "./NotFoundPage";
+import { describe, it, expect } from 'vitest';
+import { render, screen } from '@testing-library/react';
+import { MemoryRouter } from 'react-router-dom';
+import { NotFoundPage } from './NotFoundPage';
 
-describe("NotFoundPage", () => {
-    it("renders 404 message", () => {
+describe('NotFoundPage', () => {
+    it('renders 404 message', () => {
         render(
             <MemoryRouter>
                 <NotFoundPage />

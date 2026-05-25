@@ -1,29 +1,52 @@
 .table-row {
-    transition: background-color 0.2s ease;
+    transition: background-color var(--transition);
+    cursor: pointer;
 }
 
 .table-row:hover {
-    background-color: #f1f5f9;
+    background-color: var(--color-surface-hover);
+}
+
+html[data-theme='dark'] .table-cell {
+    border-bottom-color: var(--color-border-light);
+}
+
+html[data-theme='dark'] .table-row:hover {
+    background-color: rgba(255, 255, 255, 0.05);
 }
 
 .table-cell {
-    padding: 16px 20px;
-    border-bottom: 1px solid #f1f5f9;
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--color-border-light);
     font-size: 15px;
-    color: #334155;
-    line-height: 1.5;
+    color: var(--color-text);
+    line-height: 1.55;
 }
 
 .table-row:last-child .table-cell {
     border-bottom: none;
 }
 
+.checkbox-cell {
+    width: 48px;
+    text-align: center;
+    vertical-align: middle;
+}
+
+.checkbox-cell input[type='checkbox'] {
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+    accent-color: var(--accent);
+}
+
 .name-cell {
     font-weight: 600;
-    color: #1e293b;
+    color: var(--color-heading);
     width: 30%;
 }
 
 .desc-cell {
-    color: #64748b;
+    color: var(--color-muted);
+    font-size: 14px;
 }
