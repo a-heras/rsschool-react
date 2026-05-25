@@ -12,16 +12,5 @@
 .notfound-text {
     font-size: 18px;
     margin-bottom: 24px;
-    color: #475569;
-}
-
-.notfound-link {
-    font-size: 16px;
-    color: #0077ff;
-    text-decoration: none;
-    font-weight: 500;
-}
-
-.notfound-link:hover {
-    text-decoration: underline;
+    color: var(--color-subtle);
 }

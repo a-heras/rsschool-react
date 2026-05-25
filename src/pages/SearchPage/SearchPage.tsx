@@ -9,8 +9,9 @@ import { ErrorButton } from "../../components/ErrorButton/ErrorButton";
 import { Pagination } from "../../components/Pagination/Pagination";
 import { ITEMS_PER_PAGE } from "../../config/pagination";
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
-import { fetchItems, setSearchTerm } from "../../store/searchSlice";
+import { fetchItems, setSearchTerm, toggleItemSelection } from "../../store/searchSlice";
 import "./SearchPage.css";
+
 
 export function SearchPage() {
     const dispatch = useAppDispatch();
@@ -20,6 +21,7 @@ export function SearchPage() {
     const [searchParams, setSearchParams] = useSearchParams();
     const detailsId = searchParams.get("details");
     const page = Math.max(1, Number(searchParams.get("page")) || 1);
+    const selectedItems = useAppSelector((state) => state.search.selectedItems);
 
     useEffect(() => {
         const saved = localStorage.getItem("searchTerm") ?? "";
@@ -88,7 +90,12 @@ export function SearchPage() {
                         ) : loading ? (
                             <Loading />
                         ) : (
-                            <CardList items={items} onItemClick={openDetails} />
+                            <CardList
+                                items={items}
+                                selectedItems={selectedItems}
+                                onToggleSelect={(item) => dispatch(toggleItemSelection(item))}
+                                onOpenDetails={openDetails}
+                            />
                         )}
 
                         {!loading && !error && total > 0 && (

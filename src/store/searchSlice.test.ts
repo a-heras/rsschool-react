@@ -3,6 +3,8 @@ import { configureStore } from "@reduxjs/toolkit";
 import searchReducer, {
     fetchItems,
     setSearchTerm,
+    toggleItemSelection,
+    clearSelectedItems,
 } from "./searchSlice";
 import { loadDataMock, resetApiMocks } from "../test-utils/mockApi";
 
@@ -60,6 +62,27 @@ describe("searchSlice", () => {
         const state = store.getState().search;
         expect(state.loading).toBe(false);
         expect(state.error).toBe("Failed to load data. Please try again.");
+    });
+
+    it("toggleItemSelection adds and removes item", () => {
+        const store = createStore();
+        const item = { id: 1, name: "A", description: "B" };
+
+        store.dispatch(toggleItemSelection(item));
+        expect(store.getState().search.selectedItems).toHaveLength(1);
+
+        store.dispatch(toggleItemSelection(item));
+        expect(store.getState().search.selectedItems).toHaveLength(0);
+    });
+
+    it("clearSelectedItems empties selection", () => {
+        const store = createStore();
+        const item = { id: 1, name: "A", description: "B" };
+
+        store.dispatch(toggleItemSelection(item));
+        store.dispatch(clearSelectedItems());
+
+        expect(store.getState().search.selectedItems).toHaveLength(0);
     });
 
     it("fetchItems.pending sets loading to true", () => {

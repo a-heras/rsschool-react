@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { loadData } from "../api/api";
 import type { Item } from "../types/item";
+import type { PayloadAction } from "@reduxjs/toolkit";
 
 type SearchState = {
     items: Item[];
@@ -8,6 +9,7 @@ type SearchState = {
     loading: boolean;
     error: string | null;
     searchTerm: string;
+    selectedItems: Item[];
 };
 
 const initialState: SearchState = {
@@ -16,6 +18,7 @@ const initialState: SearchState = {
     loading: false,
     error: null,
     searchTerm: "",
+    selectedItems: [],
 };
 
 export const fetchItems = createAsyncThunk(
@@ -32,6 +35,19 @@ const searchSlice = createSlice({
         setSearchTerm: (state, action) => {
             state.searchTerm = action.payload;
         },
+        toggleItemSelection: (state, action: PayloadAction<Item>) => {
+            const index = state.selectedItems.findIndex(
+                (item) => item.id === action.payload.id
+            );
+            if (index >= 0) {
+                state.selectedItems.splice(index, 1);
+            } else {
+                state.selectedItems.push(action.payload);
+            }
+        },
+        clearSelectedItems: (state) => {
+            state.selectedItems = [];
+        }
     },
     extraReducers: (builder) => {
         builder
@@ -51,5 +67,5 @@ const searchSlice = createSlice({
     },
 });
 
-export const { setSearchTerm } = searchSlice.actions;
+export const { setSearchTerm, toggleItemSelection, clearSelectedItems } = searchSlice.actions;
 export default searchSlice.reducer;

@@ -14,7 +14,7 @@ export function AboutPage() {
             </p>
 
             <a
-                className="about-link"
+                className="text-link"
                 href="https://rs.school/courses/reactjs"
                 target="_blank"
                 rel="noopener noreferrer"

@@ -23,9 +23,9 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">94.59% </span>
+                <span class="strong">92.5% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>35/37</span>
+                <span class='fraction'>37/40</span>
             </div>
         
             
@@ -37,16 +37,16 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">100% </span>
+                <span class="strong">90% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>8/8</span>
+                <span class='fraction'>9/10</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">97.14% </span>
+                <span class="strong">94.59% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>34/35</span>
+                <span class='fraction'>35/37</span>
             </div>
         
             
@@ -182,7 +182,15 @@
 <a name='L117'></a><a href='#L117'>117</a>
 <a name='L118'></a><a href='#L118'>118</a>
 <a name='L119'></a><a href='#L119'>119</a>
-<a name='L120'></a><a href='#L120'>120</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L120'></a><a href='#L120'>120</a>
+<a name='L121'></a><a href='#L121'>121</a>
+<a name='L122'></a><a href='#L122'>122</a>
+<a name='L123'></a><a href='#L123'>123</a>
+<a name='L124'></a><a href='#L124'>124</a>
+<a name='L125'></a><a href='#L125'>125</a>
+<a name='L126'></a><a href='#L126'>126</a>
+<a name='L127'></a><a href='#L127'>127</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -204,6 +212,7 @@
 <span class="cline-any cline-yes">63x</span>
 <span class="cline-any cline-yes">63x</span>
 <span class="cline-any cline-yes">63x</span>
+<span class="cline-any cline-yes">119x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">63x</span>
 <span class="cline-any cline-yes">24x</span>
@@ -275,6 +284,11 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -312,8 +326,9 @@ import { ErrorButton } from "../../components/ErrorButton/ErrorButton";
 import { Pagination } from "../../components/Pagination/Pagination";
 import { ITEMS_PER_PAGE } from "../../config/pagination";
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
-import { fetchItems, setSearchTerm } from "../../store/searchSlice";
+import { fetchItems, setSearchTerm, toggleItemSelection } from "../../store/searchSlice";
 import "./SearchPage.css";
+&nbsp;
 &nbsp;
 export function SearchPage() {
     const dispatch = useAppDispatch();
@@ -323,6 +338,7 @@ export function SearchPage() {
     const [searchParams, setSearchParams] = useSearchParams();
     const detailsId = searchParams.get("details");
     const page = Math.max(1, Number(searchParams.get("page")) || 1);
+    const selectedItems = useAppSelector((state) =&gt; state.search.selectedItems);
 &nbsp;
     useEffect(() =&gt; {
         const saved = localStorage.getItem("searchTerm") ?? "";
@@ -391,7 +407,12 @@ export function SearchPage() {
                         ) : loading ? (
                             &lt;Loading /&gt;
                         ) : (
-                            &lt;CardList items={items} onItemClick={openDetails} /&gt;
+                            &lt;CardList
+                                items={items}
+                                selectedItems={selectedItems}
+<span class="fstat-no" title="function not covered" >                                onToggleSelect={(i</span>tem) =&gt; <span class="cstat-no" title="statement not covered" >dispatch(toggleItemSelection(item))}</span>
+                                onOpenDetails={openDetails}
+                            /&gt;
                         )}
 &nbsp;
                         {!loading &amp;&amp; !error &amp;&amp; total &gt; 0 &amp;&amp; (
@@ -427,7 +448,7 @@ export function SearchPage() {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2026-05-25T09:28:27.027Z
+                at 2026-05-25T11:43:44.313Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

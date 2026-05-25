@@ -9,16 +9,16 @@
     flex: 1;
     padding: 10px 16px;
     font-size: 15px;
-    border: 1px solid #e2e8f0;
-    border-radius: 8px;
-    background: #ffffff;
-    color: #334155;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    background: var(--color-surface);
+    color: var(--color-text);
     outline: none;
-    transition: all 0.2s ease;
+    transition: all var(--transition);
 }
 
 .search-input:focus {
-    border-color: #94a3b8;
+    border-color: var(--color-label);
     box-shadow: 0 0 0 3px rgba(148, 163, 184, 0.1);
 }
 
@@ -26,16 +26,16 @@
     padding: 10px 20px;
     font-size: 15px;
     font-weight: 500;
-    color: #ffffff;
-    background: #334155;
+    color: var(--color-surface);
+    background: var(--color-primary);
     border: none;
-    border-radius: 8px;
+    border-radius: var(--radius-md);
     cursor: pointer;
-    transition: background 0.2s ease;
+    transition: background var(--transition);
 }
 
 .search-button:hover {
-    background: #1e293b;
+    background: var(--color-primary-hover);
 }
 
 .search-button:active {
