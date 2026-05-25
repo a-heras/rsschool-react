@@ -22,3 +22,16 @@
     text-shadow: var(--glow);
     border-bottom: 1px solid var(--accent);
 }
+
+html[data-theme='dark'] .results-table {
+    background: transparent;
+    box-shadow: none;
+    border: 1px solid var(--color-border-light);
+}
+
+html[data-theme='dark'] .results-table th {
+    background: transparent;
+    color: var(--accent);
+    text-shadow: 0 0 12px rgba(160, 248, 29, 0.35);
+    border-bottom: none;
+}

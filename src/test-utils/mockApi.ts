@@ -1,12 +1,9 @@
-import { vi } from "vitest";
-import type { Item } from "../types/item";
+import { vi } from 'vitest';
+import type { Item } from '../types/item';
 
 type LoadDataResult = { items: Item[]; total: number };
 
-type LoadDataFn = (
-    searchTerm: string,
-    page: number
-) => Promise<LoadDataResult>;
+type LoadDataFn = (searchTerm: string, page: number) => Promise<LoadDataResult>;
 
 type LoadDetailsFn = (id: string) => Promise<Item>;
 

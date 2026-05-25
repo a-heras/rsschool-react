@@ -1,6 +1,6 @@
-import { type Item } from "../../types/item";
-import { Card } from "../Card/Card";
-import "./CardList.css"
+import { type Item } from '../../types/item';
+import { Card } from '../Card/Card';
+import './CardList.css';
 
 interface CardListProps {
     items: Item[];

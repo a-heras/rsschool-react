@@ -1,57 +1,62 @@
 .header {
-  width: 100%;
-  padding: 14px 24px;
-  background-color: var(--color-bg-dark);
-  border-bottom: 2px solid var(--accent);
-  box-shadow: var(--glow);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  position: relative;
-  z-index: 100;
-  overflow: hidden;
-}
-
-.header::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  background: linear-gradient(
-    90deg,
-    transparent 0%,
-    rgba(160, 248, 29, 0.1) 40%,
-    rgba(160, 248, 29, 0.22) 50%,
-    rgba(160, 248, 29, 0.1) 60%,
-    transparent 100%
-  );
-  animation: sheen 6.5s ease-in-out infinite;
+    width: 100%;
+    padding: 14px 24px;
+    background-color: var(--color-bg-dark);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: relative;
+    z-index: 100;
+    overflow: hidden;
 }
 
 .nav {
-  position: relative;
-  z-index: 1;
-  display: flex;
-  gap: 24px;
+    position: relative;
+    z-index: 1;
+    display: flex;
+    gap: 24px;
 }
 
 .nav-link {
-  font-family: var(--font-mono);
-  font-size: 12px;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--color-text-on-dark-muted);
-  text-decoration: none;
-  padding: 4px 0;
-  transition: color var(--transition-fast), text-shadow var(--transition-fast);
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--color-text-on-dark-muted);
+    text-decoration: none;
+    padding: 4px 0;
+    transition:
+        color var(--transition-fast),
+        text-shadow var(--transition-fast);
 }
 
 .nav-link:hover,
 .nav-link.active {
-  color: var(--accent);
-  text-shadow: var(--glow);
+    color: var(--accent);
+    text-shadow: var(--glow);
 }
 
-.nav-link.active {
-  border-bottom: 1px solid var(--accent);
+.theme-toggle {
+    position: relative;
+    z-index: 1;
+    padding: 8px 14px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--accent);
+    background: transparent;
+    border: 1px solid var(--accent);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition:
+        color var(--transition-fast),
+        background var(--transition-fast),
+        box-shadow var(--transition-fast);
+}
+
+.theme-toggle:hover {
+    color: var(--void);
+    background: var(--accent);
+    box-shadow: var(--glow);
 }

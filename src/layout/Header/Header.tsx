@@ -1,8 +1,9 @@
-import { NavLink } from "react-router-dom";
-import "./Header.css";
+import { NavLink } from 'react-router-dom';
+import './Header.css';
+import { ThemeToggle } from '../../components/ThemeToggle/ThemeToggle';
 
 function navLinkClass({ isActive }: { isActive: boolean }) {
-    return isActive ? "nav-link active" : "nav-link";
+    return isActive ? 'nav-link active' : 'nav-link';
 }
 
 export function Header() {
@@ -16,6 +17,7 @@ export function Header() {
                     About
                 </NavLink>
             </nav>
+            <ThemeToggle />
         </header>
     );
 }

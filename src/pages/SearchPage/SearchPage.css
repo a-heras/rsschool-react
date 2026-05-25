@@ -11,11 +11,15 @@
 .split--open .split-right {
     flex: 1;
     min-width: 0;
-    border-left: 1px solid var(--color-border);
+    border-left: 1px solid var(--color-border-light);
     padding-left: 24px;
     position: relative;
     background: var(--color-bg-panel);
     margin-top: 44px;
+}
+
+html[data-theme='dark'] .split--open .split-right {
+    background: transparent;
 }
 
 .split-left {

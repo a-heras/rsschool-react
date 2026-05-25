@@ -1,4 +1,4 @@
-import type { Item } from "../types/item";
+import type { Item } from '../types/item';
 
 function escapeCsvField(value: string): string {
     if (/[",\n\r]/.test(value)) {
@@ -8,12 +8,12 @@ function escapeCsvField(value: string): string {
 }
 
 function buildDetailsUrl(origin: string, itemId: number): string {
-    const params = new URLSearchParams({ page: "1", details: String(itemId) });
+    const params = new URLSearchParams({ page: '1', details: String(itemId) });
     return `${origin}/?${params.toString()}`;
 }
 
 function buildCsv(items: Item[], origin: string): string {
-    const header = ["id", "name", "description", "details_url"];
+    const header = ['id', 'name', 'description', 'details_url'];
     const rows = items.map((item) => [
         String(item.id),
         escapeCsvField(item.name),
@@ -21,17 +21,17 @@ function buildCsv(items: Item[], origin: string): string {
         escapeCsvField(buildDetailsUrl(origin, item.id)),
     ]);
 
-    return [header.join(","), ...rows.map((row) => row.join(","))].join("\n");
+    return [header.join(','), ...rows.map((row) => row.join(','))].join('\n');
 }
 
 export function downloadSelectedItemsCsv(items: Item[], origin: string): void {
     if (items.length === 0) return;
 
     const csv = buildCsv(items, origin);
-    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
 
-    const link = document.createElement("a");
+    const link = document.createElement('a');
     link.href = url;
     link.download = `${items.length}_items.csv`;
     link.click();

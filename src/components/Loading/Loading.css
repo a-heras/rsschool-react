@@ -7,16 +7,18 @@
     text-transform: uppercase;
     color: var(--accent);
     text-shadow: var(--glow);
-    animation: boot-pulse 1.2s ease-in-out infinite;
+    animation: boot-pulse 2s ease-in-out infinite;
 }
 
 @keyframes boot-pulse {
     0%,
     100% {
-        opacity: 1;
+        opacity: 0.85;
+        filter: blur(0);
     }
     50% {
-        opacity: 0.4;
+        opacity: 0.45;
+        filter: blur(0.6px);
     }
 }
 

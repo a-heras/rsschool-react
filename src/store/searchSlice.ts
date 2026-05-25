@@ -1,7 +1,7 @@
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { loadData } from "../api/api";
-import type { Item } from "../types/item";
-import type { PayloadAction } from "@reduxjs/toolkit";
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import { loadData } from '../api/api';
+import type { Item } from '../types/item';
+import type { PayloadAction } from '@reduxjs/toolkit';
 
 type SearchState = {
     items: Item[];
@@ -17,19 +17,19 @@ const initialState: SearchState = {
     total: 0,
     loading: false,
     error: null,
-    searchTerm: "",
+    searchTerm: '',
     selectedItems: [],
 };
 
 export const fetchItems = createAsyncThunk(
-    "search/fetchItems",
+    'search/fetchItems',
     async ({ term, page }: { term: string; page: number }) => {
         return loadData(term, page);
     }
 );
 
 const searchSlice = createSlice({
-    name: "search",
+    name: 'search',
     initialState,
     reducers: {
         setSearchTerm: (state, action) => {
@@ -47,25 +47,26 @@ const searchSlice = createSlice({
         },
         clearSelectedItems: (state) => {
             state.selectedItems = [];
-        }
+        },
     },
     extraReducers: (builder) => {
         builder
-        .addCase(fetchItems.pending, (state) => {
-            state.loading = true;
-            state.error = null;
-        })
-        .addCase(fetchItems.fulfilled, (state, action) => {
-            state.items = action.payload.items;
-            state.total = action.payload.total;
-            state.loading = false;
-        })
-        .addCase(fetchItems.rejected, (state) => {
-            state.loading = false;
-            state.error = "Failed to load data. Please try again.";
-        });
+            .addCase(fetchItems.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(fetchItems.fulfilled, (state, action) => {
+                state.items = action.payload.items;
+                state.total = action.payload.total;
+                state.loading = false;
+            })
+            .addCase(fetchItems.rejected, (state) => {
+                state.loading = false;
+                state.error = 'Failed to load data. Please try again.';
+            });
     },
 });
 
-export const { setSearchTerm, toggleItemSelection, clearSelectedItems } = searchSlice.actions;
+export const { setSearchTerm, toggleItemSelection, clearSelectedItems } =
+    searchSlice.actions;
 export default searchSlice.reducer;

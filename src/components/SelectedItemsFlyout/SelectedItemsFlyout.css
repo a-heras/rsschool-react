@@ -14,22 +14,6 @@
     overflow: hidden;
 }
 
-.flyout::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    background: linear-gradient(
-        90deg,
-        transparent 0%,
-        rgba(160, 248, 29, 0.1) 40%,
-        rgba(160, 248, 29, 0.22) 50%,
-        rgba(160, 248, 29, 0.1) 60%,
-        transparent 100%
-    );
-    animation: sheen 6.5s ease-in-out infinite;
-}
-
 .flyout-count {
     position: relative;
     z-index: 1;

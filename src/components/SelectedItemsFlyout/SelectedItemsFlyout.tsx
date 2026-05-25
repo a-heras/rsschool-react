@@ -1,4 +1,4 @@
-import "./SelectedItemsFlyout.css";
+import './SelectedItemsFlyout.css';
 
 interface SelectedItemsFlyoutProps {
     count: number;
@@ -7,20 +7,32 @@ interface SelectedItemsFlyoutProps {
 }
 
 function formatSelectedCount(count: number): string {
-    return count === 1 ? "1 item selected" : `${count} items selected`;
+    return count === 1 ? '1 item selected' : `${count} items selected`;
 }
 
-export function SelectedItemsFlyout({ count, onUnselectAll, onDownload }: SelectedItemsFlyoutProps) {
+export function SelectedItemsFlyout({
+    count,
+    onUnselectAll,
+    onDownload,
+}: SelectedItemsFlyoutProps) {
     if (count === 0) return null;
 
     return (
         <div className="flyout" role="region" aria-label="Selected items">
             <p className="flyout-count">{formatSelectedCount(count)}</p>
             <div className="flyout-actions">
-                <button type="button" className="btn btn--on-dark" onClick={onUnselectAll}>
+                <button
+                    type="button"
+                    className="btn btn--on-dark"
+                    onClick={onUnselectAll}
+                >
                     Unselect all
                 </button>
-                <button type="button" className="btn btn--on-dark" onClick={onDownload}>
+                <button
+                    type="button"
+                    className="btn btn--on-dark"
+                    onClick={onDownload}
+                >
                     Download
                 </button>
             </div>

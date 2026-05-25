@@ -1,19 +1,22 @@
-import { useEffect } from "react";
-import { Outlet, useSearchParams } from "react-router-dom";
-import { Search } from "../../components/Search/Search";
-import "../../layout/Main/Main.css";
-import { CardList } from "../../components/CardList/CardList";
-import { Loading } from "../../components/Loading/Loading";
-import { ErrorMessage } from "../../components/ErrorMessage/ErrorMessage";
-import { ErrorButton } from "../../components/ErrorButton/ErrorButton";
-import { Pagination } from "../../components/Pagination/Pagination";
-import { ITEMS_PER_PAGE } from "../../config/pagination";
-import { useAppDispatch, useAppSelector } from "../../store/hooks";
-import { fetchItems, setSearchTerm, toggleItemSelection, clearSelectedItems } from "../../store/searchSlice";
-import { SelectedItemsFlyout } from "../../components/SelectedItemsFlyout/SelectedItemsFlyout";
-import { downloadSelectedItemsCsv } from "../../utils/downloadSelectedItemsCsv";
-import "./SearchPage.css";
-
+import { useEffect } from 'react';
+import { Outlet, useSearchParams } from 'react-router-dom';
+import { Search } from '../../components/Search/Search';
+import { CardList } from '../../components/CardList/CardList';
+import { Loading } from '../../components/Loading/Loading';
+import { ErrorMessage } from '../../components/ErrorMessage/ErrorMessage';
+import { ErrorButton } from '../../components/ErrorButton/ErrorButton';
+import { Pagination } from '../../components/Pagination/Pagination';
+import { ITEMS_PER_PAGE } from '../../config/pagination';
+import { useAppDispatch, useAppSelector } from '../../store/hooks';
+import {
+    fetchItems,
+    setSearchTerm,
+    toggleItemSelection,
+    clearSelectedItems,
+} from '../../store/searchSlice';
+import { SelectedItemsFlyout } from '../../components/SelectedItemsFlyout/SelectedItemsFlyout';
+import { downloadSelectedItemsCsv } from '../../utils/downloadSelectedItemsCsv';
+import './SearchPage.css';
 
 export function SearchPage() {
     const dispatch = useAppDispatch();
@@ -21,18 +24,17 @@ export function SearchPage() {
         (state) => state.search
     );
     const [searchParams, setSearchParams] = useSearchParams();
-    const detailsId = searchParams.get("details");
-    const page = Math.max(1, Number(searchParams.get("page")) || 1);
+    const detailsId = searchParams.get('details');
+    const page = Math.max(1, Number(searchParams.get('page')) || 1);
     const selectedItems = useAppSelector((state) => state.search.selectedItems);
-
     useEffect(() => {
-        const saved = localStorage.getItem("searchTerm") ?? "";
+        const saved = localStorage.getItem('searchTerm') ?? '';
 
         if (saved && saved !== searchTerm) {
             dispatch(setSearchTerm(saved));
             return;
         }
-    
+
         dispatch(fetchItems({ term: searchTerm, page }));
     }, [dispatch, searchTerm, page]);
 
@@ -43,9 +45,9 @@ export function SearchPage() {
 
         dispatch(setSearchTerm(trimmed));
 
-        localStorage.setItem("searchTerm", trimmed);
+        localStorage.setItem('searchTerm', trimmed);
 
-        setSearchParams({ page: "1" });
+        setSearchParams({ page: '1' });
     };
 
     const maxPage = Math.ceil(total / ITEMS_PER_PAGE);
@@ -60,14 +62,19 @@ export function SearchPage() {
         }
     }, [page, maxPage, detailsId, setSearchParams]);
 
-    const openDetails = (id: string) => {
-        if (!id || id === "undefined") return;
-
-        setSearchParams({ page: String(page), details: id });
-    };
-
     const closeDetails = () => {
         setSearchParams({ page: String(page) });
+    };
+
+    const openDetails = (id: string) => {
+        if (!id || id === 'undefined') return;
+
+        if (detailsId === id) {
+            closeDetails();
+            return;
+        }
+
+        setSearchParams({ page: String(page), details: id });
     };
 
     const handleDownload = () => {
@@ -85,12 +92,16 @@ export function SearchPage() {
     return (
         <>
             <div className="top-controls">
-                <Search savedTerm={searchTerm} onSearch={handleSearch} />
+                <Search
+                    key={searchTerm}
+                    savedTerm={searchTerm}
+                    onSearch={handleSearch}
+                />
             </div>
 
             <div className="results-section panel">
                 <div className="results-section__body">
-                    <div className={detailsId ? "split split--open" : "split"}>
+                    <div className={detailsId ? 'split split--open' : 'split'}>
                         <div className="split-left">
                             {error ? (
                                 <ErrorMessage message={error} />
@@ -118,14 +129,14 @@ export function SearchPage() {
                         </div>
                         {detailsId && (
                             <div className="split-right">
-                            <button
-                                type="button"
-                                className="btn btn--on-dark close-btn"
-                                onClick={closeDetails}
-                                aria-label="Close details"
-                            >
-                                <span aria-hidden="true">×</span>
-                            </button>
+                                <button
+                                    type="button"
+                                    className="btn btn--on-dark close-btn"
+                                    onClick={closeDetails}
+                                    aria-label="Close details"
+                                >
+                                    <span aria-hidden="true">×</span>
+                                </button>
                                 <Outlet />
                             </div>
                         )}

@@ -7,6 +7,14 @@
     background-color: var(--color-surface-hover);
 }
 
+html[data-theme='dark'] .table-cell {
+    border-bottom-color: var(--color-border-light);
+}
+
+html[data-theme='dark'] .table-row:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
 .table-cell {
     padding: 14px 16px;
     border-bottom: 1px solid var(--color-border-light);
@@ -25,7 +33,7 @@
     vertical-align: middle;
 }
 
-.checkbox-cell input[type="checkbox"] {
+.checkbox-cell input[type='checkbox'] {
     width: 16px;
     height: 16px;
     cursor: pointer;

@@ -1,5 +1,5 @@
-import { type Item } from "../../types/item";
-import "./Card.css";
+import { type Item } from '../../types/item';
+import './Card.css';
 
 interface CardProps {
     item: Item;

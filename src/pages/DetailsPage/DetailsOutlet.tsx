@@ -1,13 +1,13 @@
-import { useSearchParams } from "react-router-dom";
-import { DetailsPage } from "./DetailsPage";
+import { useSearchParams } from 'react-router-dom';
+import { DetailsPage } from './DetailsPage';
 
 export function DetailsOutlet() {
     const [searchParams] = useSearchParams();
-    const detailsId = searchParams.get("details");
+    const detailsId = searchParams.get('details');
 
-    if (!detailsId || detailsId === "undefined") {
+    if (!detailsId || detailsId === 'undefined') {
         return null;
     }
 
-    return <DetailsPage itemId={detailsId} />;
+    return <DetailsPage key={detailsId} itemId={detailsId} />;
 }

@@ -1,5 +1,5 @@
-import { type ReactNode } from "react";
-import "./Main.css";
+import { type ReactNode } from 'react';
+import './Main.css';
 
 interface MainProps {
     children: ReactNode;

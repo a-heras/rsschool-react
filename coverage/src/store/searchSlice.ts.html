@@ -133,7 +133,9 @@
 <a name='L68'></a><a href='#L68'>68</a>
 <a name='L69'></a><a href='#L69'>69</a>
 <a name='L70'></a><a href='#L70'>70</a>
-<a name='L71'></a><a href='#L71'>71</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L71'></a><a href='#L71'>71</a>
+<a name='L72'></a><a href='#L72'>72</a>
+<a name='L73'></a><a href='#L73'>73</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -159,7 +161,7 @@
 <span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">27x</span>
+<span class="cline-any cline-yes">29x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -187,26 +189,28 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">27x</span>
-<span class="cline-any cline-yes">27x</span>
+<span class="cline-any cline-yes">29x</span>
+<span class="cline-any cline-yes">29x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">22x</span>
-<span class="cline-any cline-yes">22x</span>
-<span class="cline-any cline-yes">22x</span>
+<span class="cline-any cline-yes">24x</span>
+<span class="cline-any cline-yes">24x</span>
+<span class="cline-any cline-yes">24x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">4x</span>
 <span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">3x</span>
-<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { loadData } from "../api/api";
-import type { Item } from "../types/item";
-import type { PayloadAction } from "@reduxjs/toolkit";
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import { loadData } from '../api/api';
+import type { Item } from '../types/item';
+import type { PayloadAction } from '@reduxjs/toolkit';
 &nbsp;
 type SearchState = {
     items: Item[];
@@ -222,19 +226,19 @@ const initialState: SearchState = {
     total: 0,
     loading: false,
     error: null,
-    searchTerm: "",
+    searchTerm: '',
     selectedItems: [],
 };
 &nbsp;
 export const fetchItems = createAsyncThunk(
-    "search/fetchItems",
+    'search/fetchItems',
     async ({ term, page }: { term: string; page: number }) =&gt; {
         return loadData(term, page);
     }
 );
 &nbsp;
 const searchSlice = createSlice({
-    name: "search",
+    name: 'search',
     initialState,
     reducers: {
         setSearchTerm: (state, action) =&gt; {
@@ -252,35 +256,37 @@ const searchSlice = createSlice({
         },
         clearSelectedItems: (state) =&gt; {
             state.selectedItems = [];
-        }
+        },
     },
     extraReducers: (builder) =&gt; {
         builder
-        .addCase(fetchItems.pending, (state) =&gt; {
-            state.loading = true;
-            state.error = null;
-        })
-        .addCase(fetchItems.fulfilled, (state, action) =&gt; {
-            state.items = action.payload.items;
-            state.total = action.payload.total;
-            state.loading = false;
-        })
-        .addCase(fetchItems.rejected, (state) =&gt; {
-            state.loading = false;
-            state.error = "Failed to load data. Please try again.";
-        });
+            .addCase(fetchItems.pending, (state) =&gt; {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(fetchItems.fulfilled, (state, action) =&gt; {
+                state.items = action.payload.items;
+                state.total = action.payload.total;
+                state.loading = false;
+            })
+            .addCase(fetchItems.rejected, (state) =&gt; {
+                state.loading = false;
+                state.error = 'Failed to load data. Please try again.';
+            });
     },
 });
 &nbsp;
-export const { setSearchTerm, toggleItemSelection, clearSelectedItems } = searchSlice.actions;
-export default searchSlice.reducer;</pre></td></tr></table></pre>
+export const { setSearchTerm, toggleItemSelection, clearSelectedItems } =
+    searchSlice.actions;
+export default searchSlice.reducer;
+&nbsp;</pre></td></tr></table></pre>
 
                 <div class='push'></div><!-- for sticky footer -->
             </div><!-- /wrapper -->
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2026-05-25T14:00:11.643Z
+                at 2026-05-25T15:17:35.915Z
             </div>
         <script src="../../prettify.js"></script>
         <script>
