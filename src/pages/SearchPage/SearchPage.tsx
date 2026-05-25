@@ -1,53 +1,45 @@
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import { Outlet, useSearchParams } from "react-router-dom";
 import { Search } from "../../components/Search/Search";
 import "../../layout/Main/Main.css";
 import { CardList } from "../../components/CardList/CardList";
-import { type Item } from "../../types/item";
-import { loadData } from "../../api/api";
 import { Loading } from "../../components/Loading/Loading";
 import { ErrorMessage } from "../../components/ErrorMessage/ErrorMessage";
 import { ErrorButton } from "../../components/ErrorButton/ErrorButton";
 import { Pagination } from "../../components/Pagination/Pagination";
 import { ITEMS_PER_PAGE } from "../../config/pagination";
-import { useLocalStorage } from "../../hooks/useLocalStorage";
+import { useAppDispatch, useAppSelector } from "../../store/hooks";
+import { fetchItems, setSearchTerm } from "../../store/searchSlice";
 import "./SearchPage.css";
 
 export function SearchPage() {
-    const [items, setItems] = useState<Item[]>([]);
-    const [lastSearchTerm, setLastSearchTerm] = useLocalStorage(
-        "searchTerm",
-        ""
+    const dispatch = useAppDispatch();
+    const { items, total, loading, error, searchTerm } = useAppSelector(
+        (state) => state.search
     );
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState<string | null>(null);
     const [searchParams, setSearchParams] = useSearchParams();
     const detailsId = searchParams.get("details");
     const page = Math.max(1, Number(searchParams.get("page")) || 1);
-    const [total, setTotal] = useState(0);
 
     useEffect(() => {
-        setLoading(true);
-        setError(null);
+        const saved = localStorage.getItem("searchTerm") ?? "";
 
-        loadData(lastSearchTerm, page)
-            .then(({ items, total }) => {
-                setItems(items);
-                setTotal(total);
-                setLoading(false);
-            })
-            .catch(() => {
-                setLoading(false);
-                setError("Failed to load data. Please try again.");
-            });
-    }, [page, lastSearchTerm]);
+        if (saved && saved !== searchTerm) {
+            dispatch(setSearchTerm(saved));
+            return;
+        }
+    
+        dispatch(fetchItems({ term: searchTerm, page }));
+    }, [dispatch, searchTerm, page]);
 
     const handleSearch = (term: string) => {
         const trimmed = term.trim();
 
-        if (trimmed === lastSearchTerm) return;
+        if (trimmed === searchTerm) return;
 
-        setLastSearchTerm(trimmed);
+        dispatch(setSearchTerm(trimmed));
+
+        localStorage.setItem("searchTerm", trimmed);
 
         setSearchParams({ page: "1" });
     };
@@ -85,7 +77,7 @@ export function SearchPage() {
     return (
         <>
             <div className="top-controls">
-                <Search savedTerm={lastSearchTerm} onSearch={handleSearch} />
+                <Search savedTerm={searchTerm} onSearch={handleSearch} />
             </div>
 
             <div className="results-section">

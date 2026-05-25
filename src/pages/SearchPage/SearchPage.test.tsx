@@ -1,8 +1,10 @@
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
+import { Provider } from "react-redux";
 import { createMemoryRouter, RouterProvider } from "react-router-dom";
 import { SearchPage } from "./SearchPage";
 import { DetailsOutlet } from "../DetailsPage/DetailsOutlet";
+import { createTestStore } from "../../test-utils/testStore";
 import {
     loadDataMock,
     loadDetailsMock,
@@ -24,9 +26,14 @@ const routes = [
 ];
 
 function renderWithRouter(url = "/?page=1") {
+    const store = createTestStore();
     const router = createMemoryRouter(routes, { initialEntries: [url] });
 
-    render(<RouterProvider router={router} />);
+    render(
+        <Provider store={store}>
+            <RouterProvider router={router} />
+        </Provider>
+    );
 
     return router;
 }
@@ -76,10 +83,12 @@ describe("SearchPage component", () => {
         });
     });
 
-    it("calls loadData on mount with empty searchTerm when localStorage is empty", () => {
+    it("calls loadData on mount with empty searchTerm when localStorage is empty", async () => {
         renderWithRouter();
 
-        expect(loadDataMock).toHaveBeenCalledWith("", 1);
+        await waitFor(() => {
+            expect(loadDataMock).toHaveBeenCalledWith("", 1);
+        });
     });
 
     it("loads data for the page from URL", async () => {

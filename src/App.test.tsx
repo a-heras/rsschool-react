@@ -1,7 +1,9 @@
 import { render, screen } from "@testing-library/react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
+import { Provider } from "react-redux";
 import { MemoryRouter } from "react-router-dom";
 import App from "./App";
+import { createTestStore } from "./test-utils/testStore";
 import { loadDataMock, resetApiMocks } from "./test-utils/mockApi";
 
 vi.mock("./api/api", async () => {
@@ -18,9 +20,11 @@ describe("App component", () => {
 
     it("renders search UI for user interaction", async () => {
         render(
-            <MemoryRouter>
-                <App />
-            </MemoryRouter>
+            <Provider store={createTestStore()}>
+                <MemoryRouter>
+                    <App />
+                </MemoryRouter>
+            </Provider>
         );
 
         expect(await screen.findByPlaceholderText("Search...")).toBeInTheDocument();
