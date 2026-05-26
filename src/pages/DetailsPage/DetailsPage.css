@@ -3,6 +3,10 @@
     height: 100%;
 }
 
+.details-refresh-btn {
+    margin-bottom: 12px;
+}
+
 .details-panel__state {
     display: flex;
     align-items: center;

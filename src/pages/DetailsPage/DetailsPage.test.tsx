@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen, waitFor, fireEvent } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import { DetailsPage } from './DetailsPage';
 import { loadDetails } from '../../api/api';
@@ -102,6 +102,21 @@ describe('DetailsPage', () => {
         expect(
             container.querySelector('.details-container')
         ).toBeInTheDocument();
+    });
+
+    it('refetches details when Refresh is clicked', async () => {
+        loadDetailsMock.mockResolvedValue(itemOne);
+
+        renderDetails('1');
+
+        await screen.findByText('Test Item');
+        expect(loadDetailsMock).toHaveBeenCalledTimes(1);
+
+        fireEvent.click(screen.getByRole('button', { name: 'Refresh' }));
+
+        await waitFor(() => {
+            expect(loadDetailsMock).toHaveBeenCalledTimes(2);
+        });
     });
 
     it('reuses cached details when returning to a previously loaded item', async () => {

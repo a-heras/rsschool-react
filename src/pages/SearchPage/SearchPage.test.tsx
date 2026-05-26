@@ -308,6 +308,29 @@ describe('SearchPage component', () => {
         });
     });
 
+    it('refetches list when Refresh is clicked', async () => {
+        loadDataMock.mockResolvedValue({
+            items: [listItem],
+            total: 1,
+        });
+
+        renderWithRouter();
+
+        await waitFor(() => {
+            expect(screen.getByText('Item 1')).toBeInTheDocument();
+        });
+
+        const callsBefore = loadDataMock.mock.calls.length;
+
+        fireEvent.click(
+            screen.getByRole('button', { name: 'Refresh search results' })
+        );
+
+        await waitFor(() => {
+            expect(loadDataMock.mock.calls.length).toBeGreaterThan(callsBefore);
+        });
+    });
+
     it('shows details error in split view while list stays visible', async () => {
         loadDataMock.mockResolvedValue({
             items: [listItem],

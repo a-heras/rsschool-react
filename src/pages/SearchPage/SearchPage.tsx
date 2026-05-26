@@ -13,7 +13,7 @@ import {
     toggleItemSelection,
     clearSelectedItems,
 } from '../../store/searchSlice';
-import { useGetItemsQuery } from '../../store/searchApi';
+import { searchApi, useGetItemsQuery } from '../../store/searchApi';
 import { SelectedItemsFlyout } from '../../components/SelectedItemsFlyout/SelectedItemsFlyout';
 import { downloadSelectedItemsCsv } from '../../utils/downloadSelectedItemsCsv';
 import './SearchPage.css';
@@ -92,6 +92,15 @@ export function SearchPage() {
         }
     };
 
+    const handleRefreshList = () => {
+        dispatch(
+            searchApi.util.invalidateTags([
+                { type: 'Items', id: 'LIST' },
+                { type: 'Items', id: `${searchTerm}-${page}` },
+            ])
+        );
+    };
+
     return (
         <>
             <div className="top-controls">
@@ -100,6 +109,14 @@ export function SearchPage() {
                     savedTerm={searchTerm}
                     onSearch={handleSearch}
                 />
+                <button
+                    type="button"
+                    className="btn btn--on-dark"
+                    onClick={handleRefreshList}
+                    aria-label="Refresh search results"
+                >
+                    Refresh
+                </button>
             </div>
 
             <div className="results-section panel">
