@@ -104,6 +104,40 @@ describe('DetailsPage', () => {
         ).toBeInTheDocument();
     });
 
+    it('reuses cached details when returning to a previously loaded item', async () => {
+        loadDetailsMock
+            .mockResolvedValueOnce(itemOne)
+            .mockResolvedValueOnce(itemTwo);
+
+        const store = createTestStore();
+        const { rerender } = render(
+            <Provider store={store}>
+                <DetailsPage itemId="1" />
+            </Provider>
+        );
+
+        await screen.findByText('Test Item');
+
+        rerender(
+            <Provider store={store}>
+                <DetailsPage itemId="2" />
+            </Provider>
+        );
+
+        await screen.findByText('Second Item');
+        expect(loadDetailsMock).toHaveBeenCalledTimes(2);
+
+        rerender(
+            <Provider store={store}>
+                <DetailsPage itemId="1" />
+            </Provider>
+        );
+
+        await screen.findByText('Test Item');
+        expect(loadDetailsMock).toHaveBeenCalledTimes(2);
+        expect(screen.queryByText(/loading/i)).not.toBeInTheDocument();
+    });
+
     it('reloads details when itemId changes', async () => {
         loadDetailsMock
             .mockResolvedValueOnce(itemOne)
