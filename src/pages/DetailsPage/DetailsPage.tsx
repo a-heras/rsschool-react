@@ -1,6 +1,5 @@
-import { useEffect, useState } from 'react';
-import { loadDetails } from '../../api/api';
-import { type Item } from '../../types/item';
+import { useAppDispatch } from '../../store/hooks';
+import { searchApi, useGetItemDetailsQuery } from '../../store/searchApi';
 import { Loading } from '../../components/Loading/Loading';
 import { ErrorMessage } from '../../components/ErrorMessage/ErrorMessage';
 import './DetailsPage.css';
@@ -10,23 +9,17 @@ interface DetailsPageProps {
 }
 
 export function DetailsPage({ itemId }: DetailsPageProps) {
-    const [item, setItem] = useState<Item | null>(null);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
+    const dispatch = useAppDispatch();
 
-    useEffect(() => {
-        loadDetails(itemId)
-            .then((data) => {
-                setItem(data);
-                setLoading(false);
-            })
-            .catch(() => {
-                setError('Failed to load details.');
-                setLoading(false);
-            });
-    }, [itemId]);
+    const { data: item, isLoading, isError } = useGetItemDetailsQuery(itemId, {
+        skip: !itemId || itemId === 'undefined',
+    });
 
-    if (loading) {
+    const handleRefreshDetails = () => {
+        dispatch(searchApi.util.invalidateTags([{ type: 'Item', id: itemId }]));
+    };
+
+    if (isLoading) {
         return (
             <section className="details-panel">
                 <div className="details-panel__state">
@@ -36,10 +29,17 @@ export function DetailsPage({ itemId }: DetailsPageProps) {
         );
     }
 
-    if (error) {
+    if (isError) {
         return (
             <section className="details-panel">
-                <ErrorMessage message={error} />
+                <button
+                    type="button"
+                    className="btn btn--on-dark details-refresh-btn"
+                    onClick={handleRefreshDetails}
+                >
+                    Refresh
+                </button>
+                <ErrorMessage message="Failed to load details. Please try again." />
             </section>
         );
     }
@@ -48,6 +48,13 @@ export function DetailsPage({ itemId }: DetailsPageProps) {
 
     return (
         <section className="details-panel">
+            <button
+                type="button"
+                className="btn btn--on-dark details-refresh-btn"
+                onClick={handleRefreshDetails}
+            >
+                Refresh
+            </button>
             <article className="details-container">
                 <p className="details-label">Item #{item.id}</p>
                 <h2 className="details-title">{item.name}</h2>

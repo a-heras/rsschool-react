@@ -1,7 +1,9 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen, waitFor, fireEvent } from '@testing-library/react';
+import { Provider } from 'react-redux';
 import { DetailsPage } from './DetailsPage';
 import { loadDetails } from '../../api/api';
+import { createTestStore } from '../../test-utils/testStore';
 import type { Item } from '../../types/item';
 
 vi.mock('../../api/api');
@@ -20,6 +22,18 @@ const itemTwo: Item = {
     description: 'Another description',
 };
 
+function renderDetails(itemId: string) {
+    const store = createTestStore();
+    return {
+        store,
+        ...render(
+            <Provider store={store}>
+                <DetailsPage itemId={itemId} />
+            </Provider>
+        ),
+    };
+}
+
 describe('DetailsPage', () => {
     beforeEach(() => {
         vi.clearAllMocks();
@@ -28,7 +42,7 @@ describe('DetailsPage', () => {
     it('shows loading state initially', () => {
         loadDetailsMock.mockReturnValue(new Promise(() => {}));
 
-        render(<DetailsPage itemId="1" />);
+        renderDetails('1');
 
         expect(loadDetailsMock).toHaveBeenCalledWith('1');
         expect(screen.getByText(/loading/i)).toBeInTheDocument();
@@ -37,7 +51,7 @@ describe('DetailsPage', () => {
     it('renders details after successful load', async () => {
         loadDetailsMock.mockResolvedValue(itemOne);
 
-        render(<DetailsPage itemId="1" />);
+        renderDetails('1');
 
         expect(loadDetailsMock).toHaveBeenCalledWith('1');
         expect(await screen.findByText('Test Item')).toBeInTheDocument();
@@ -48,18 +62,18 @@ describe('DetailsPage', () => {
     it('shows error message on failure', async () => {
         loadDetailsMock.mockRejectedValue(new Error('fail'));
 
-        render(<DetailsPage itemId="1" />);
+        renderDetails('1');
 
         expect(loadDetailsMock).toHaveBeenCalledWith('1');
         expect(
-            await screen.findByText('Failed to load details.')
+            await screen.findByText('Failed to load details. Please try again.')
         ).toBeInTheDocument();
     });
 
     it('hides loading after data is loaded', async () => {
         loadDetailsMock.mockResolvedValue(itemOne);
 
-        render(<DetailsPage itemId="1" />);
+        renderDetails('1');
 
         await screen.findByText('Test Item');
 
@@ -69,9 +83,9 @@ describe('DetailsPage', () => {
     it('does not render item content when load fails', async () => {
         loadDetailsMock.mockRejectedValue(new Error('fail'));
 
-        render(<DetailsPage itemId="1" />);
+        renderDetails('1');
 
-        await screen.findByText('Failed to load details.');
+        await screen.findByText('Failed to load details. Please try again.');
 
         expect(screen.queryByText('Item #1')).not.toBeInTheDocument();
         expect(screen.queryByText(/loading/i)).not.toBeInTheDocument();
@@ -80,7 +94,7 @@ describe('DetailsPage', () => {
     it('renders content inside details-panel', async () => {
         loadDetailsMock.mockResolvedValue(itemOne);
 
-        const { container } = render(<DetailsPage itemId="1" />);
+        const { container } = renderDetails('1');
 
         await screen.findByText('Test Item');
 
@@ -90,16 +104,74 @@ describe('DetailsPage', () => {
         ).toBeInTheDocument();
     });
 
+    it('refetches details when Refresh is clicked', async () => {
+        loadDetailsMock.mockResolvedValue(itemOne);
+
+        renderDetails('1');
+
+        await screen.findByText('Test Item');
+        expect(loadDetailsMock).toHaveBeenCalledTimes(1);
+
+        fireEvent.click(screen.getByRole('button', { name: 'Refresh' }));
+
+        await waitFor(() => {
+            expect(loadDetailsMock).toHaveBeenCalledTimes(2);
+        });
+    });
+
+    it('reuses cached details when returning to a previously loaded item', async () => {
+        loadDetailsMock
+            .mockResolvedValueOnce(itemOne)
+            .mockResolvedValueOnce(itemTwo);
+
+        const store = createTestStore();
+        const { rerender } = render(
+            <Provider store={store}>
+                <DetailsPage itemId="1" />
+            </Provider>
+        );
+
+        await screen.findByText('Test Item');
+
+        rerender(
+            <Provider store={store}>
+                <DetailsPage itemId="2" />
+            </Provider>
+        );
+
+        await screen.findByText('Second Item');
+        expect(loadDetailsMock).toHaveBeenCalledTimes(2);
+
+        rerender(
+            <Provider store={store}>
+                <DetailsPage itemId="1" />
+            </Provider>
+        );
+
+        await screen.findByText('Test Item');
+        expect(loadDetailsMock).toHaveBeenCalledTimes(2);
+        expect(screen.queryByText(/loading/i)).not.toBeInTheDocument();
+    });
+
     it('reloads details when itemId changes', async () => {
         loadDetailsMock
             .mockResolvedValueOnce(itemOne)
             .mockResolvedValueOnce(itemTwo);
 
-        const { rerender } = render(<DetailsPage itemId="1" />);
+        const store = createTestStore();
+        const { rerender } = render(
+            <Provider store={store}>
+                <DetailsPage itemId="1" />
+            </Provider>
+        );
 
         expect(await screen.findByText('Test Item')).toBeInTheDocument();
 
-        rerender(<DetailsPage key="2" itemId="2" />);
+        rerender(
+            <Provider store={store}>
+                <DetailsPage key="2" itemId="2" />
+            </Provider>
+        );
 
         expect(await screen.findByText('Second Item')).toBeInTheDocument();
         expect(screen.getByText('Another description')).toBeInTheDocument();
@@ -112,16 +184,16 @@ describe('DetailsPage', () => {
     it('returns null when load resolves without item', async () => {
         loadDetailsMock.mockResolvedValue(null as unknown as Item);
 
-        const { container } = render(<DetailsPage itemId="1" />);
+        const { container } = renderDetails('1');
 
         await waitFor(() => {
             expect(loadDetailsMock).toHaveBeenCalledWith('1');
+            expect(container).toBeEmptyDOMElement();
         });
 
-        expect(container).toBeEmptyDOMElement();
         expect(screen.queryByText(/loading/i)).not.toBeInTheDocument();
         expect(
-            screen.queryByText('Failed to load details.')
+            screen.queryByText('Failed to load details. Please try again.')
         ).not.toBeInTheDocument();
     });
 
@@ -135,11 +207,20 @@ describe('DetailsPage', () => {
                 })
         );
 
-        const { rerender } = render(<DetailsPage itemId="1" />);
+        const store = createTestStore();
+        const { rerender } = render(
+            <Provider store={store}>
+                <DetailsPage itemId="1" />
+            </Provider>
+        );
 
         await screen.findByText('Test Item');
 
-        rerender(<DetailsPage key="2" itemId="2" />);
+        rerender(
+            <Provider store={store}>
+                <DetailsPage key="2" itemId="2" />
+            </Provider>
+        );
 
         expect(screen.getByText(/loading/i)).toBeInTheDocument();
 

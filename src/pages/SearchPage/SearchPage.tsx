@@ -9,34 +9,39 @@ import { Pagination } from '../../components/Pagination/Pagination';
 import { ITEMS_PER_PAGE } from '../../config/pagination';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import {
-    fetchItems,
     setSearchTerm,
     toggleItemSelection,
     clearSelectedItems,
 } from '../../store/searchSlice';
+import { searchApi, useGetItemsQuery } from '../../store/searchApi';
 import { SelectedItemsFlyout } from '../../components/SelectedItemsFlyout/SelectedItemsFlyout';
 import { downloadSelectedItemsCsv } from '../../utils/downloadSelectedItemsCsv';
 import './SearchPage.css';
 
 export function SearchPage() {
     const dispatch = useAppDispatch();
-    const { items, total, loading, error, searchTerm } = useAppSelector(
-        (state) => state.search
-    );
     const [searchParams, setSearchParams] = useSearchParams();
     const detailsId = searchParams.get('details');
     const page = Math.max(1, Number(searchParams.get('page')) || 1);
+
+    const searchTerm = useAppSelector((state) => state.search.searchTerm);
     const selectedItems = useAppSelector((state) => state.search.selectedItems);
+   
+    const { data, isLoading, isError } = useGetItemsQuery({
+        term: searchTerm,
+        page,
+    });
+
+    const items = data?.items ?? [];
+    const total = data?.total ?? 0;
+    const maxPage = Math.ceil(total / ITEMS_PER_PAGE);
+
     useEffect(() => {
         const saved = localStorage.getItem('searchTerm') ?? '';
-
         if (saved && saved !== searchTerm) {
             dispatch(setSearchTerm(saved));
-            return;
         }
-
-        dispatch(fetchItems({ term: searchTerm, page }));
-    }, [dispatch, searchTerm, page]);
+    }, [dispatch, searchTerm]);
 
     const handleSearch = (term: string) => {
         const trimmed = term.trim();
@@ -49,8 +54,6 @@ export function SearchPage() {
 
         setSearchParams({ page: '1' });
     };
-
-    const maxPage = Math.ceil(total / ITEMS_PER_PAGE);
 
     useEffect(() => {
         if (page > maxPage && maxPage > 0) {
@@ -89,6 +92,15 @@ export function SearchPage() {
         }
     };
 
+    const handleRefreshList = () => {
+        dispatch(
+            searchApi.util.invalidateTags([
+                { type: 'Items', id: 'LIST' },
+                { type: 'Items', id: `${searchTerm}-${page}` },
+            ])
+        );
+    };
+
     return (
         <>
             <div className="top-controls">
@@ -97,15 +109,23 @@ export function SearchPage() {
                     savedTerm={searchTerm}
                     onSearch={handleSearch}
                 />
+                <button
+                    type="button"
+                    className="btn btn--on-dark"
+                    onClick={handleRefreshList}
+                    aria-label="Refresh search results"
+                >
+                    Refresh
+                </button>
             </div>
 
             <div className="results-section panel">
                 <div className="results-section__body">
                     <div className={detailsId ? 'split split--open' : 'split'}>
                         <div className="split-left">
-                            {error ? (
-                                <ErrorMessage message={error} />
-                            ) : loading ? (
+                            {isError ? (
+                                <ErrorMessage message="Failed to load data. Please try again." />
+                            ) : isLoading ? (
                                 <Loading />
                             ) : (
                                 <CardList
@@ -118,7 +138,7 @@ export function SearchPage() {
                                 />
                             )}
 
-                            {!loading && !error && total > 0 && (
+                            {!isLoading && !isError && total > 0 && (
                                 <Pagination
                                     page={page}
                                     maxPage={maxPage}

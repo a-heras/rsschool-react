@@ -130,13 +130,15 @@ describe('SearchPage component', () => {
             expect(loadDataMock).toHaveBeenCalledWith('same', 1);
         });
 
+        const callsBefore = loadDataMock.mock.calls.length;
+
         const input = screen.getByPlaceholderText('Search...');
         const button = screen.getByText('Search');
 
         fireEvent.change(input, { target: { value: 'same' } });
         fireEvent.click(button);
 
-        expect(loadDataMock).toHaveBeenCalledTimes(1);
+        expect(loadDataMock.mock.calls.length).toBe(callsBefore);
     });
 
     it('shows loading when searching', async () => {
@@ -198,6 +200,99 @@ describe('SearchPage component', () => {
         });
     });
 
+    it('reuses cached list data when returning to a previous page', async () => {
+        loadDataMock.mockResolvedValue({
+            items: [listItem],
+            total: 12,
+        });
+
+        renderWithRouter();
+
+        await waitFor(() => {
+            expect(screen.getByText('Item 1')).toBeInTheDocument();
+        });
+
+        expect(loadDataMock).toHaveBeenCalledWith('', 1);
+
+        fireEvent.click(screen.getByText('Next'));
+
+        await waitFor(() => {
+            expect(loadDataMock).toHaveBeenCalledWith('', 2);
+        });
+
+        const callsAfterPage2 = loadDataMock.mock.calls.length;
+
+        fireEvent.click(screen.getByText('Prev'));
+
+        await waitFor(() => {
+            expect(screen.getByText('Item 1')).toBeInTheDocument();
+        });
+
+        expect(loadDataMock.mock.calls.length).toBe(callsAfterPage2);
+        expect(screen.queryByText('Loading...')).not.toBeInTheDocument();
+    });
+
+    it('shows loading in details panel on first open only', async () => {
+        loadDataMock.mockResolvedValue({
+            items: [listItem],
+            total: 1,
+        });
+
+        let resolveDetails!: (value: {
+            id: number;
+            name: string;
+            description: string;
+        }) => void;
+        loadDetailsMock.mockImplementation(
+            () =>
+                new Promise((resolve) => {
+                    resolveDetails = resolve;
+                })
+        );
+
+        const router = renderWithRouter();
+
+        await waitFor(() => {
+            expect(screen.getByText('Item 1')).toBeInTheDocument();
+        });
+
+        fireEvent.click(screen.getByText('Item 1'));
+
+        await waitFor(() => {
+            expect(router.state.location.search).toContain('details=1');
+        });
+
+        expect(screen.getAllByText(/loading/i).length).toBeGreaterThan(0);
+
+        resolveDetails({
+            id: 1,
+            name: 'Detail 1',
+            description: 'Detail desc',
+        });
+
+        await screen.findByText('Detail 1');
+
+        fireEvent.click(
+            screen.getByRole('button', { name: 'Close details' })
+        );
+
+        await waitFor(() => {
+            expect(router.state.location.search).not.toContain('details=');
+        });
+
+        expect(loadDetailsMock).toHaveBeenCalledTimes(1);
+
+        fireEvent.click(screen.getByText('Item 1'));
+
+        await waitFor(() => {
+            expect(router.state.location.search).toContain('details=1');
+        });
+
+        expect(await screen.findByText('Detail 1')).toBeInTheDocument();
+        expect(loadDetailsMock).toHaveBeenCalledTimes(1);
+        expect(screen.queryByText('Loading...')).not.toBeInTheDocument();
+    });
+
     it('clamps page when page in URL exceeds maxPage', async () => {
         loadDataMock.mockResolvedValue({
             items: [listItem],
@@ -210,6 +305,73 @@ describe('SearchPage component', () => {
             const search = router.state.location.search;
             expect(search).toContain('page=2');
             expect(search).not.toContain('page=10');
+        });
+    });
+
+    it('refetches list when Refresh is clicked', async () => {
+        loadDataMock.mockResolvedValue({
+            items: [listItem],
+            total: 1,
+        });
+
+        renderWithRouter();
+
+        await waitFor(() => {
+            expect(screen.getByText('Item 1')).toBeInTheDocument();
+        });
+
+        const callsBefore = loadDataMock.mock.calls.length;
+
+        fireEvent.click(
+            screen.getByRole('button', { name: 'Refresh search results' })
+        );
+
+        await waitFor(() => {
+            expect(loadDataMock.mock.calls.length).toBeGreaterThan(callsBefore);
+        });
+    });
+
+    it('shows details error in split view while list stays visible', async () => {
+        loadDataMock.mockResolvedValue({
+            items: [listItem],
+            total: 1,
+        });
+        loadDetailsMock.mockRejectedValue(new Error('fail'));
+
+        renderWithRouter();
+
+        await waitFor(() => {
+            expect(screen.getByText('Item 1')).toBeInTheDocument();
+        });
+
+        fireEvent.click(screen.getByText('Item 1'));
+
+        await waitFor(() => {
+            expect(
+                screen.getByText('Failed to load details. Please try again.')
+            ).toBeInTheDocument();
+        });
+
+        expect(screen.getByText('Item 1')).toBeInTheDocument();
+        expect(
+            screen.queryByText('Failed to load data. Please try again.')
+        ).not.toBeInTheDocument();
+    });
+
+    it('shows details error when details id is already in URL', async () => {
+        loadDataMock.mockResolvedValue({
+            items: [listItem],
+            total: 1,
+        });
+        loadDetailsMock.mockRejectedValue(new Error('fail'));
+
+        renderWithRouter('/?page=1&details=1');
+
+        await waitFor(() => {
+            expect(screen.getByText('Item 1')).toBeInTheDocument();
+            expect(
+                screen.getByText('Failed to load details. Please try again.')
+            ).toBeInTheDocument();
         });
     });
 
