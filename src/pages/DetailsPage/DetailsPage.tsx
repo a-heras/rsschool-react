@@ -1,6 +1,4 @@
-import { useEffect, useState } from 'react';
-import { loadDetails } from '../../api/api';
-import { type Item } from '../../types/item';
+import { useGetItemDetailsQuery } from '../../store/searchApi';
 import { Loading } from '../../components/Loading/Loading';
 import { ErrorMessage } from '../../components/ErrorMessage/ErrorMessage';
 import './DetailsPage.css';
@@ -10,23 +8,11 @@ interface DetailsPageProps {
 }
 
 export function DetailsPage({ itemId }: DetailsPageProps) {
-    const [item, setItem] = useState<Item | null>(null);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
+    const { data: item, isLoading, isError } = useGetItemDetailsQuery(itemId, {
+        skip: !itemId || itemId === 'undefined',
+    });
 
-    useEffect(() => {
-        loadDetails(itemId)
-            .then((data) => {
-                setItem(data);
-                setLoading(false);
-            })
-            .catch(() => {
-                setError('Failed to load details.');
-                setLoading(false);
-            });
-    }, [itemId]);
-
-    if (loading) {
+    if (isLoading) {
         return (
             <section className="details-panel">
                 <div className="details-panel__state">
@@ -36,10 +22,10 @@ export function DetailsPage({ itemId }: DetailsPageProps) {
         );
     }
 
-    if (error) {
+    if (isError) {
         return (
             <section className="details-panel">
-                <ErrorMessage message={error} />
+                <ErrorMessage message="Failed to load details. Please try again." />
             </section>
         );
     }

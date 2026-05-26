@@ -130,13 +130,15 @@ describe('SearchPage component', () => {
             expect(loadDataMock).toHaveBeenCalledWith('same', 1);
         });
 
+        const callsBefore = loadDataMock.mock.calls.length;
+
         const input = screen.getByPlaceholderText('Search...');
         const button = screen.getByText('Search');
 
         fireEvent.change(input, { target: { value: 'same' } });
         fireEvent.click(button);
 
-        expect(loadDataMock).toHaveBeenCalledTimes(1);
+        expect(loadDataMock.mock.calls.length).toBe(callsBefore);
     });
 
     it('shows loading when searching', async () => {
