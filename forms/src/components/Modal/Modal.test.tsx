@@ -53,6 +53,29 @@ describe('Modal', () => {
         expect(onClose).toHaveBeenCalledTimes(1);
     });
 
+    it('traps focus with Tab key', async () => {
+        const user = userEvent.setup();
+
+        render(
+            <Modal {...defaultProps}>
+                <button type="button">First</button>
+                <button type="button">Last</button>
+            </Modal>
+        );
+
+        const closeButton = screen.getByRole('button', { name: 'Close modal' });
+        const last = screen.getByRole('button', { name: 'Last' });
+
+        closeButton.focus();
+        await user.tab({ shift: true });
+
+        expect(last).toHaveFocus();
+
+        await user.tab();
+
+        expect(closeButton).toHaveFocus();
+    });
+
     it('does not call onClose when modal content is clicked', async () => {
         const user = userEvent.setup();
         const onClose = vi.fn();

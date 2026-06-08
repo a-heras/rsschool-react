@@ -1,5 +1,5 @@
-import { useRef } from 'react';
-import { useForm } from 'react-hook-form';
+import { useCallback, useEffect, useState } from 'react';
+import { useForm, useWatch } from 'react-hook-form';
 import type { Resolver } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { FormFieldError } from '../../components/FormFieldError/FormFieldError';
@@ -19,19 +19,31 @@ type ReactHookFormProps = {
 export function ReactHookForm({ onSuccess }: ReactHookFormProps) {
     const dispatch = useAppDispatch();
     const countries = useAppSelector(selectCountries);
-    const schema = createFormSchema(countries);
 
-    const imageInputRef = useRef<HTMLInputElement>(null);
+    const [fileInputKey, setFileInputKey] = useState(0);
+
+    const createResolver = useCallback(
+        (password: string): Resolver<FormValues> =>
+            zodResolver(createFormSchema(countries, password)) as Resolver<FormValues>,
+        [countries]
+    );
+
+    const resolver = useCallback<Resolver<FormValues>>(
+        async (values, context, options) =>
+            createResolver(String(values.password ?? ''))(values, context, options),
+        [createResolver]
+    );
 
     const {
         register,
         handleSubmit,
         reset,
         setValue,
-        watch,
+        trigger,
+        control,
         formState: { errors, isValid },
-    } = useForm({
-        resolver: zodResolver(schema) as Resolver<FormValues>,
+    } = useForm<FormValues>({
+        resolver,
         mode: 'onChange',
         defaultValues: {
             name: '',
@@ -46,8 +58,18 @@ export function ReactHookForm({ onSuccess }: ReactHookFormProps) {
         },
     });
 
-    const passwordValue = watch('password') ?? '';
-    const selectedImage = watch('image');
+    const [passwordValue = '', confirmPasswordValue = '', selectedImage] = useWatch({
+        control,
+        name: ['password', 'confirmPassword', 'image'],
+    });
+
+    useEffect(() => {
+        if (!confirmPasswordValue) {
+            return;
+        }
+
+        void trigger('confirmPassword');
+    }, [passwordValue, confirmPasswordValue, trigger]);
 
     const onSubmit = async (data: FormValues) => {
         const imageBase64 = await fileToBase64(data.image);
@@ -67,9 +89,7 @@ export function ReactHookForm({ onSuccess }: ReactHookFormProps) {
 
         dispatch(addSubmission(submission));
         reset();
-        if (imageInputRef.current) {
-            imageInputRef.current.value = '';
-        }
+        setFileInputKey((key) => key + 1);
         onSuccess();
     };
 
@@ -126,7 +146,7 @@ export function ReactHookForm({ onSuccess }: ReactHookFormProps) {
             <div className="form-field">
                 <label htmlFor="rhf-image">Image</label>
                 <input
-                    ref={imageInputRef}
+                    key={fileInputKey}
                     id="rhf-image"
                     type="file"
                     accept="image/png,image/jpeg,image/jpg,.png,.jpg,.jpeg"

@@ -2,6 +2,8 @@ import { describe, expect, it } from 'vitest';
 import submissionsReducer, {
   addSubmission,
   clearLatestHighlight,
+  selectLatestSubmissionId,
+  selectSubmissions,
 } from './submissionsSlice';
 import type { FormSubmission } from '../types/form';
 
@@ -36,5 +38,14 @@ describe('submissionsSlice', () => {
 
     expect(state.items).toHaveLength(1);
     expect(state.latestId).toBeNull();
+  });
+
+  it('selectors return submissions and latest id', () => {
+    const state = {
+      submissions: submissionsReducer(undefined, addSubmission(mockSubmission)),
+    };
+
+    expect(selectSubmissions(state)).toEqual([mockSubmission]);
+    expect(selectLatestSubmissionId(state)).toBe('1');
   });
 });

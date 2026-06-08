@@ -29,7 +29,7 @@ function isAllowedImageFile(file: File): boolean {
     return extension === 'png' || extension === 'jpg' || extension === 'jpeg';
 }
 
-export const createFormSchema = (countries: string[]) =>
+export const createFormSchema = (countries: string[], passwordForConfirm = '') =>
     z
         .object({
             name: z
@@ -58,7 +58,14 @@ export const createFormSchema = (countries: string[]) =>
                 message: 'You must accept Terms and Conditions',
             }),
             password: z.string().min(1, 'Password is required'),
-            confirmPassword: z.string().min(1, 'Confirm password is required'),
+            confirmPassword: z
+                .string()
+                .min(1, 'Confirm password is required')
+                .refine(
+                    (confirmPassword) =>
+                        !passwordForConfirm || passwordForConfirm === confirmPassword,
+                    'Passwords must match'
+                ),
             image: z.preprocess(
                 normalizeImageInput,
                 z
@@ -78,9 +85,18 @@ export const createFormSchema = (countries: string[]) =>
                     'Country must be selected from the list'
                 ),
         })
-        .refine((data) => data.password === data.confirmPassword, {
-            message: 'Passwords must match',
-            path: ['confirmPassword'],
+        .superRefine((data, ctx) => {
+            if (passwordForConfirm) {
+                return;
+            }
+
+            if (data.password !== data.confirmPassword) {
+                ctx.addIssue({
+                    code: 'custom',
+                    message: 'Passwords must match',
+                    path: ['confirmPassword'],
+                });
+            }
         });
 
 export type FormValues = z.infer<ReturnType<typeof createFormSchema>>;
