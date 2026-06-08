@@ -8,6 +8,11 @@ import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { selectCountries } from '../../store/countriesSlice';
 import { addSubmission } from '../../store/submissionsSlice';
 import type { FormSubmission } from '../../types/form';
+import {
+    handleAgeKeyDown,
+    handleAgePaste,
+    sanitizeAgeDigits,
+} from '../../utils/ageInput';
 import { fileToBase64 } from '../../utils/imageToBase64';
 import { createFormSchema, type FormValues } from '../../validation/formSchema';
 import '../shared/form.css';
@@ -58,6 +63,19 @@ export function ReactHookForm({ onSuccess }: ReactHookFormProps) {
         },
     });
 
+    const ageRegister = register('age', {
+        onChange: (event) => {
+            const sanitized = sanitizeAgeDigits(event.target.value);
+
+            if (sanitized !== event.target.value) {
+                setValue('age', sanitized, {
+                    shouldValidate: true,
+                    shouldDirty: true,
+                });
+            }
+        },
+    });
+
     const [passwordValue = '', confirmPasswordValue = '', selectedImage] = useWatch({
         control,
         name: ['password', 'confirmPassword', 'image'],
@@ -103,7 +121,14 @@ export function ReactHookForm({ onSuccess }: ReactHookFormProps) {
 
             <div className="form-field">
                 <label htmlFor="rhf-age">Age</label>
-                <input id="rhf-age" type="number" min="0" {...register('age')} />
+                <input
+                    id="rhf-age"
+                    type="text"
+                    inputMode="numeric"
+                    {...ageRegister}
+                    onKeyDown={handleAgeKeyDown}
+                    onPaste={handleAgePaste}
+                />
                 <FormFieldError message={errors.age?.message} />
             </div>
 

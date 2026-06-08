@@ -35,6 +35,16 @@ describe('UncontrolledForm', () => {
         expect(screen.getByText('Selected: avatar.jpg')).toBeInTheDocument();
     });
 
+    it('does not allow typing non-digit characters in age', async () => {
+        const user = userEvent.setup();
+        renderWithStore(<UncontrolledForm onSuccess={() => undefined} />);
+
+        await user.type(screen.getByLabelText(/^age$/i), 'e');
+        await user.type(screen.getByLabelText(/^age$/i), '30x');
+
+        expect(screen.getByLabelText(/^age$/i)).toHaveValue('30');
+    });
+
     it('shows image validation error when file is missing on submit', async () => {
         const user = userEvent.setup();
         renderWithStore(<UncontrolledForm onSuccess={() => undefined} />);

@@ -6,6 +6,7 @@ import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { selectCountries } from '../../store/countriesSlice';
 import { addSubmission } from '../../store/submissionsSlice';
 import type { FormSubmission } from '../../types/form';
+import { handleAgeKeyDown, handleAgePaste } from '../../utils/ageInput';
 import { fileToBase64 } from '../../utils/imageToBase64';
 import { createFormSchema } from '../../validation/formSchema';
 import '../shared/form.css';
@@ -97,7 +98,14 @@ export function UncontrolledForm({ onSuccess }: UncontrolledFormProps) {
 
             <div className="form-field">
                 <label htmlFor="uncontrolled-age">Age</label>
-                <input id="uncontrolled-age" name="age" type="number" min="0" />
+                <input
+                    id="uncontrolled-age"
+                    name="age"
+                    type="text"
+                    inputMode="numeric"
+                    onKeyDown={handleAgeKeyDown}
+                    onPaste={handleAgePaste}
+                />
                 <FormFieldError message={errors.age} />
             </div>
 

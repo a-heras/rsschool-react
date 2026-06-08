@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { normalizeAgeInput } from '../utils/parseAge';
 import { validateEmail } from '../utils/validateEmail';
 
 const MAX_IMAGE_SIZE = 1024 * 1024;
@@ -42,12 +43,15 @@ export const createFormSchema = (countries: string[], passwordForConfirm = '') =
                         value.charAt(0) !== value.charAt(0).toLowerCase(),
                     'Name must start with an uppercase letter'
                 ),
-            age: z.coerce
-                .number({
-                    message: 'Age must be a number',
-                })
-                .int('Age must be a number')
-                .nonnegative('Age cannot be negative'),
+            age: z.preprocess(
+                normalizeAgeInput,
+                z
+                    .number({
+                        message: 'Age must be a number',
+                    })
+                    .int('Age must be a number')
+                    .nonnegative('Age cannot be negative')
+            ),
             email: z
                 .string()
                 .trim()

@@ -26,6 +26,18 @@ async function fillValidFormExceptConfirm(
     await user.click(screen.getByLabelText(/terms and conditions/i));
 }
 
+describe('ReactHookForm age validation', () => {
+    it('does not allow typing non-digit characters in age', async () => {
+        const user = userEvent.setup();
+        renderForm();
+
+        await user.type(screen.getByLabelText(/^age$/i), 'e');
+        await user.type(screen.getByLabelText(/^age$/i), '25a');
+
+        expect(screen.getByLabelText(/^age$/i)).toHaveValue('25');
+    });
+});
+
 describe('ReactHookForm confirm password', () => {
     it('shows mismatch error before other fields are filled', async () => {
         const user = userEvent.setup();
