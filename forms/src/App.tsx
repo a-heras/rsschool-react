@@ -1,5 +1,8 @@
 import { useState, useRef } from 'react'
 import { Modal } from './components/Modal/Modal'
+import { SubmissionsList } from './components/SubmissionsList/SubmissionsList';
+import { UncontrolledForm } from './forms/UncontrolledForm/UncontrolledForm';
+import { ReactHookForm } from './forms/ReactHookForm/ReactHookForm';
 import './App.css';
 
 function App() {
@@ -32,11 +35,12 @@ function App() {
 				}
 			>
 				{openForm === 'uncontrolled' ? (
-				<p>Uncontrolled form here</p>
+					<UncontrolledForm onSuccess={() => setOpenForm(null)} />
 				) : (
-				<p>RHF here</p>
+					<ReactHookForm onSuccess={() => setOpenForm(null)} />
 				)}
 			</Modal>
+			<SubmissionsList />
 		</main>
 	);
 }

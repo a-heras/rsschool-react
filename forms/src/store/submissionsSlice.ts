@@ -19,10 +19,13 @@ const submissionsSlice = createSlice({
             state.items.push(action.payload);
             state.latestId = action.payload.id;
         },
+        clearLatestHighlight: (state) => {
+            state.latestId = null;
+        },
     },
 });
 
-export const { addSubmission } = submissionsSlice.actions;
+export const { addSubmission, clearLatestHighlight } = submissionsSlice.actions;
 
 export const selectSubmissions = (state: { submissions: SubmissionsState}) =>
     state.submissions.items;

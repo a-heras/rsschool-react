@@ -1,5 +1,8 @@
 import { describe, expect, it } from 'vitest';
-import submissionsReducer, { addSubmission } from './submissionsSlice';
+import submissionsReducer, {
+  addSubmission,
+  clearLatestHighlight,
+} from './submissionsSlice';
 import type { FormSubmission } from '../types/form';
 
 const mockSubmission: FormSubmission = {
@@ -22,5 +25,16 @@ describe('submissionsSlice', () => {
     expect(state.items).toHaveLength(1);
     expect(state.items[0]).toEqual(mockSubmission);
     expect(state.latestId).toBe('1');
+  });
+
+  it('clears latestId highlight', () => {
+    const withSubmission = submissionsReducer(
+      undefined,
+      addSubmission(mockSubmission)
+    );
+    const state = submissionsReducer(withSubmission, clearLatestHighlight());
+
+    expect(state.items).toHaveLength(1);
+    expect(state.latestId).toBeNull();
   });
 });

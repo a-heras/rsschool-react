@@ -1,0 +1,181 @@
+import { useRef } from 'react';
+import { useForm } from 'react-hook-form';
+import type { Resolver } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { FormFieldError } from '../../components/FormFieldError/FormFieldError';
+import { PasswordStrength } from '../../components/PasswordStrength/PasswordStrength';
+import { useAppDispatch, useAppSelector } from '../../store/hooks';
+import { selectCountries } from '../../store/countriesSlice';
+import { addSubmission } from '../../store/submissionsSlice';
+import type { FormSubmission } from '../../types/form';
+import { fileToBase64 } from '../../utils/imageToBase64';
+import { createFormSchema, type FormValues } from '../../validation/formSchema';
+import '../shared/form.css';
+
+type ReactHookFormProps = {
+    onSuccess: () => void;
+};
+
+export function ReactHookForm({ onSuccess }: ReactHookFormProps) {
+    const dispatch = useAppDispatch();
+    const countries = useAppSelector(selectCountries);
+    const schema = createFormSchema(countries);
+
+    const imageInputRef = useRef<HTMLInputElement>(null);
+
+    const {
+        register,
+        handleSubmit,
+        reset,
+        setValue,
+        watch,
+        formState: { errors, isValid },
+    } = useForm({
+        resolver: zodResolver(schema) as Resolver<FormValues>,
+        mode: 'onChange',
+        defaultValues: {
+            name: '',
+            age: undefined,
+            email: '',
+            gender: '',
+            termsAccepted: undefined,
+            password: '',
+            confirmPassword: '',
+            country: '',
+            image: undefined,
+        },
+    });
+
+    const passwordValue = watch('password') ?? '';
+    const selectedImage = watch('image');
+
+    const onSubmit = async (data: FormValues) => {
+        const imageBase64 = await fileToBase64(data.image);
+
+        const submission: FormSubmission = {
+            id: crypto.randomUUID(),
+            formType: 'react-hook-form',
+            name: data.name,
+            age: data.age,
+            email: data.email,
+            gender: data.gender,
+            termsAccepted: data.termsAccepted,
+            imageBase64,
+            country: data.country,
+            submittedAt: new Date().toISOString(),
+        };
+
+        dispatch(addSubmission(submission));
+        reset();
+        if (imageInputRef.current) {
+            imageInputRef.current.value = '';
+        }
+        onSuccess();
+    };
+
+    return (
+        <form className="profile-form" onSubmit={handleSubmit(onSubmit)} noValidate>
+            <div className="form-field">
+                <label htmlFor="rhf-name">Name</label>
+                <input id="rhf-name" type="text" {...register('name')} />
+                <FormFieldError message={errors.name?.message} />
+            </div>
+
+            <div className="form-field">
+                <label htmlFor="rhf-age">Age</label>
+                <input id="rhf-age" type="number" min="0" {...register('age')} />
+                <FormFieldError message={errors.age?.message} />
+            </div>
+
+            <div className="form-field">
+                <label htmlFor="rhf-email">Email</label>
+                <input id="rhf-email" type="email" {...register('email')} />
+                <FormFieldError message={errors.email?.message} />
+            </div>
+
+            <div className="form-field">
+                <label htmlFor="rhf-gender">Gender</label>
+                <select id="rhf-gender" {...register('gender')}>
+                    <option value="" disabled>
+                        Select gender
+                    </option>
+                    <option value="male">Male</option>
+                    <option value="female">Female</option>
+                    <option value="other">Other</option>
+                </select>
+                <FormFieldError message={errors.gender?.message} />
+            </div>
+
+            <div className="form-field">
+                <label htmlFor="rhf-password">Password</label>
+                <input id="rhf-password" type="password" {...register('password')} />
+                <PasswordStrength password={passwordValue} />
+                <FormFieldError message={errors.password?.message} />
+            </div>
+
+            <div className="form-field">
+                <label htmlFor="rhf-confirm-password">Confirm password</label>
+                <input
+                    id="rhf-confirm-password"
+                    type="password"
+                    {...register('confirmPassword')}
+                />
+                <FormFieldError message={errors.confirmPassword?.message} />
+            </div>
+
+            <div className="form-field">
+                <label htmlFor="rhf-image">Image</label>
+                <input
+                    ref={imageInputRef}
+                    id="rhf-image"
+                    type="file"
+                    accept="image/png,image/jpeg,image/jpg,.png,.jpg,.jpeg"
+                    onChange={(event) => {
+                        const file = event.target.files?.[0];
+                        if (!file) return;
+
+                        setValue('image', file, {
+                            shouldValidate: true,
+                            shouldDirty: true,
+                        });
+                    }}
+                />
+                {selectedImage instanceof File ? (
+                    <p className="form-field__file-name">Selected: {selectedImage.name}</p>
+                ) : null}
+                <FormFieldError message={errors.image?.message} />
+            </div>
+
+            <div className="form-field">
+                <label htmlFor="rhf-country">Country</label>
+                <input id="rhf-country" list="rhf-country-list" {...register('country')} />
+                <datalist id="rhf-country-list">
+                    {countries.map((country) => (
+                        <option key={country} value={country} />
+                    ))}
+                </datalist>
+                <FormFieldError message={errors.country?.message} />
+            </div>
+
+            <div className="form-field form-field--checkbox">
+                <input
+                    id="rhf-terms"
+                    type="checkbox"
+                    {...register('termsAccepted', {
+                        setValueAs: (value) => value === true,
+                    })}
+                />
+                <label htmlFor="rhf-terms">I accept Terms and Conditions</label>
+                <FormFieldError message={errors.termsAccepted?.message} />
+            </div>
+
+            <button
+                type="submit"
+                className="profile-form__submit"
+                disabled={!isValid}
+            >
+                Submit
+            </button>
+        </form>
+    );
+}
