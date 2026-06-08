@@ -1,0 +1,32 @@
+.about {
+    padding: 36px 32px;
+    max-width: 720px;
+    margin: 0 auto;
+    background: var(--color-bg-panel);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-sm);
+}
+
+.about-title {
+    font-family: var(--font-mono);
+    font-size: 22px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--accent);
+    text-shadow: var(--glow);
+    margin-bottom: 16px;
+}
+
+.about-author {
+    font-size: 16px;
+    margin-bottom: 12px;
+    color: var(--color-muted);
+}
+
+.about-text {
+    font-size: 16px;
+    margin-bottom: 20px;
+    line-height: 1.6;
+    color: var(--color-text);
+}

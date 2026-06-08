@@ -1,0 +1,29 @@
+.submissions-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.submissions-list__title {
+    margin: 0;
+    font-size: 1.5rem;
+    color: var(--text-h);
+}
+
+.submissions-list__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.submissions-list__empty {
+    margin: 0;
+    padding: 1.5rem;
+    border: 1px dashed var(--border);
+    border-radius: 12px;
+    text-align: center;
+    color: var(--text);
+}

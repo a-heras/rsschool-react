@@ -1,0 +1,27 @@
+.error-button-container {
+    margin-top: 20px;
+    display: flex;
+    justify-content: center;
+}
+
+.error-trigger-button {
+    padding: 8px 16px;
+    font-size: 13px;
+    font-weight: 500;
+    color: #ef4444;
+    background: transparent;
+    border: 1px solid #fee2e2;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: all var(--transition);
+}
+
+.error-trigger-button:hover {
+    background: #fef2f2;
+    border-color: #fca5a5;
+    color: #dc2626;
+}
+
+.error-trigger-button:active {
+    transform: translateY(1px);
+}
