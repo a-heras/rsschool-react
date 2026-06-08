@@ -12,6 +12,14 @@ const NAVIGATION_KEYS = new Set([
     'End',
 ]);
 
+export function toAgeFieldValue(sanitized: string): number | undefined {
+    if (sanitized === '') {
+        return undefined;
+    }
+
+    return Number(sanitized);
+}
+
 export function sanitizeAgeDigits(value: string): string {
     let result = '';
 

@@ -12,9 +12,14 @@ import {
     handleAgeKeyDown,
     handleAgePaste,
     sanitizeAgeDigits,
+    toAgeFieldValue,
 } from '../../utils/ageInput';
 import { fileToBase64 } from '../../utils/imageToBase64';
-import { createFormSchema, type FormValues } from '../../validation/formSchema';
+import {
+    createFormSchema,
+    type FormFieldValues,
+    type FormValues,
+} from '../../validation/formSchema';
 import '../shared/form.css';
 
 type ReactHookFormProps = {
@@ -28,12 +33,16 @@ export function ReactHookForm({ onSuccess }: ReactHookFormProps) {
     const [fileInputKey, setFileInputKey] = useState(0);
 
     const createResolver = useCallback(
-        (password: string): Resolver<FormValues> =>
-            zodResolver(createFormSchema(countries, password)) as Resolver<FormValues>,
+        (password: string): Resolver<FormFieldValues, unknown, FormValues> =>
+            zodResolver(createFormSchema(countries, password)) as Resolver<
+                FormFieldValues,
+                unknown,
+                FormValues
+            >,
         [countries]
     );
 
-    const resolver = useCallback<Resolver<FormValues>>(
+    const resolver = useCallback<Resolver<FormFieldValues, unknown, FormValues>>(
         async (values, context, options) =>
             createResolver(String(values.password ?? ''))(values, context, options),
         [createResolver]
@@ -47,7 +56,7 @@ export function ReactHookForm({ onSuccess }: ReactHookFormProps) {
         trigger,
         control,
         formState: { errors, isValid },
-    } = useForm<FormValues>({
+    } = useForm<FormFieldValues, unknown, FormValues>({
         resolver,
         mode: 'onChange',
         defaultValues: {
@@ -68,7 +77,7 @@ export function ReactHookForm({ onSuccess }: ReactHookFormProps) {
             const sanitized = sanitizeAgeDigits(event.target.value);
 
             if (sanitized !== event.target.value) {
-                setValue('age', sanitized, {
+                setValue('age', toAgeFieldValue(sanitized), {
                     shouldValidate: true,
                     shouldDirty: true,
                 });

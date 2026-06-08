@@ -104,3 +104,9 @@ export const createFormSchema = (countries: string[], passwordForConfirm = '') =
         });
 
 export type FormValues = z.infer<ReturnType<typeof createFormSchema>>;
+
+export type FormFieldValues = Omit<FormValues, 'age' | 'termsAccepted' | 'image'> & {
+    age?: number;
+    termsAccepted?: boolean;
+    image?: File;
+};

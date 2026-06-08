@@ -3,7 +3,15 @@ import {
     handleAgeKeyDown,
     handleAgePaste,
     sanitizeAgeDigits,
+    toAgeFieldValue,
 } from './ageInput';
+
+describe('toAgeFieldValue', () => {
+    it('converts sanitized digits to number or undefined', () => {
+        expect(toAgeFieldValue('')).toBeUndefined();
+        expect(toAgeFieldValue('25')).toBe(25);
+    });
+});
 
 describe('sanitizeAgeDigits', () => {
     it('keeps only digits', () => {
