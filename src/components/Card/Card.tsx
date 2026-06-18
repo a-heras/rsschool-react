@@ -1,4 +1,6 @@
-import { type Item } from '../../types/item';
+'use client';
+
+import { type Item } from '@/types/item';
 import './Card.css';
 
 interface CardProps {

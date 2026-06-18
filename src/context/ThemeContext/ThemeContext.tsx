@@ -1,9 +1,15 @@
+'use client';
+
 import { useState, useEffect, useMemo, type ReactNode } from 'react';
 import type { Theme } from './theme';
 import { THEME_STORAGE_KEY } from './theme';
 import { ThemeContext } from './theme-context';
 
 function getInitialTheme(): Theme {
+    if (typeof window === 'undefined') {
+        return 'light';
+    }
+
     const saved = localStorage.getItem(THEME_STORAGE_KEY);
     return saved === 'dark' ? 'dark' : 'light';
 }

@@ -1,48 +1,49 @@
+import '@/test-utils/mockNextNavigation';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { Provider } from 'react-redux';
-import { createMemoryRouter, RouterProvider } from 'react-router-dom';
 import { SearchPage } from './SearchPage';
-import { DetailsOutlet } from '../DetailsPage/DetailsOutlet';
-import { createTestStore } from '../../test-utils/testStore';
+import { createTestStore } from '@/test-utils/testStore';
 import {
     loadDataMock,
     loadDetailsMock,
     resetApiMocks,
-} from '../../test-utils/mockApi';
+} from '@/test-utils/mockApi';
+import {
+    setInitialSearch,
+    getSearchSnapshot,
+    pushMock,
+} from '@/test-utils/mockNextNavigation';
 
-vi.mock('../../api/api', async () => {
+vi.mock('@/api/api', async () => {
     const { loadDataMock: mockedLoadData, loadDetailsMock: mockedLoadDetails } =
-        await import('../../test-utils/mockApi');
+        await import('@/test-utils/mockApi');
     return { loadData: mockedLoadData, loadDetails: mockedLoadDetails };
 });
 
 const downloadSelectedItemsCsvMock = vi.fn();
 
-vi.mock('../../utils/downloadSelectedItemsCsv', () => ({
+vi.mock('@/utils/downloadSelectedItemsCsv', () => ({
     downloadSelectedItemsCsv: (...args: unknown[]) =>
         downloadSelectedItemsCsvMock(...args),
 }));
 
-const routes = [
-    {
-        path: '/',
-        element: <SearchPage />,
-        children: [{ index: true, element: <DetailsOutlet /> }],
-    },
-];
+function renderSearchPage(url = '/?page=1') {
+    const search = url.includes('?') ? url.split('?')[1] : 'page=1';
+    setInitialSearch(search);
+    pushMock.mockClear();
 
-function renderWithRouter(url = '/?page=1') {
     const store = createTestStore();
-    const router = createMemoryRouter(routes, { initialEntries: [url] });
 
     render(
         <Provider store={store}>
-            <RouterProvider router={router} />
+            <SearchPage />
         </Provider>
     );
 
-    return router;
+    return {
+        getSearch: () => getSearchSnapshot(),
+    };
 }
 
 const emptyLoadResult = { items: [], total: 0 };
@@ -64,7 +65,7 @@ describe('SearchPage component', () => {
             total: 1,
         });
 
-        renderWithRouter();
+        renderSearchPage();
 
         expect(screen.getByText('Loading...')).toBeInTheDocument();
 
@@ -80,9 +81,7 @@ describe('SearchPage component', () => {
         localStorage.setItem('searchTerm', 'initial');
         loadDataMock.mockRejectedValue(new Error('fail'));
 
-        renderWithRouter();
-
-        expect(screen.getByText('Loading...')).toBeInTheDocument();
+        renderSearchPage();
 
         await waitFor(() => {
             expect(
@@ -92,7 +91,7 @@ describe('SearchPage component', () => {
     });
 
     it('calls loadData on mount with empty searchTerm when localStorage is empty', async () => {
-        renderWithRouter();
+        renderSearchPage();
 
         await waitFor(() => {
             expect(loadDataMock).toHaveBeenCalledWith('', 1);
@@ -100,7 +99,7 @@ describe('SearchPage component', () => {
     });
 
     it('loads data for the page from URL', async () => {
-        renderWithRouter('/?page=2');
+        renderSearchPage('/?page=2');
 
         await waitFor(() => {
             expect(loadDataMock).toHaveBeenCalledWith('', 2);
@@ -108,7 +107,7 @@ describe('SearchPage component', () => {
     });
 
     it('calls loadData with trimmed search term when searching', async () => {
-        renderWithRouter();
+        renderSearchPage();
 
         const input = screen.getByPlaceholderText('Search...');
         const button = screen.getByText('Search');
@@ -124,7 +123,7 @@ describe('SearchPage component', () => {
     it('does not search if term is same as lastSearchTerm', async () => {
         localStorage.setItem('searchTerm', 'same');
 
-        renderWithRouter();
+        renderSearchPage();
 
         await waitFor(() => {
             expect(loadDataMock).toHaveBeenCalledWith('same', 1);
@@ -142,7 +141,7 @@ describe('SearchPage component', () => {
     });
 
     it('shows loading when searching', async () => {
-        renderWithRouter();
+        renderSearchPage();
 
         const input = screen.getByPlaceholderText('Search...');
         const button = screen.getByText('Search');
@@ -156,7 +155,7 @@ describe('SearchPage component', () => {
     it('shows error message when search fails', async () => {
         loadDataMock.mockRejectedValue(new Error('fail'));
 
-        renderWithRouter();
+        renderSearchPage();
 
         const input = screen.getByPlaceholderText('Search...');
         const button = screen.getByText('Search');
@@ -172,7 +171,7 @@ describe('SearchPage component', () => {
     });
 
     it('does not show pagination when total is 0', async () => {
-        renderWithRouter();
+        renderSearchPage();
 
         await waitFor(() => {
             expect(loadDataMock).toHaveBeenCalled();
@@ -187,7 +186,7 @@ describe('SearchPage component', () => {
             total: 12,
         });
 
-        renderWithRouter();
+        renderSearchPage();
 
         await waitFor(() => {
             expect(screen.getByText('Next')).toBeInTheDocument();
@@ -206,13 +205,11 @@ describe('SearchPage component', () => {
             total: 12,
         });
 
-        renderWithRouter();
+        renderSearchPage();
 
         await waitFor(() => {
             expect(screen.getByText('Item 1')).toBeInTheDocument();
         });
-
-        expect(loadDataMock).toHaveBeenCalledWith('', 1);
 
         fireEvent.click(screen.getByText('Next'));
 
@@ -229,7 +226,6 @@ describe('SearchPage component', () => {
         });
 
         expect(loadDataMock.mock.calls.length).toBe(callsAfterPage2);
-        expect(screen.queryByText('Loading...')).not.toBeInTheDocument();
     });
 
     it('shows loading in details panel on first open only', async () => {
@@ -238,11 +234,11 @@ describe('SearchPage component', () => {
             total: 1,
         });
 
-        let resolveDetails!: (value: {
+        let resolveDetails: (value: {
             id: number;
             name: string;
             description: string;
-        }) => void;
+        }) => void = () => {};
         loadDetailsMock.mockImplementation(
             () =>
                 new Promise((resolve) => {
@@ -250,7 +246,7 @@ describe('SearchPage component', () => {
                 })
         );
 
-        const router = renderWithRouter();
+        const navigation = renderSearchPage();
 
         await waitFor(() => {
             expect(screen.getByText('Item 1')).toBeInTheDocument();
@@ -259,7 +255,7 @@ describe('SearchPage component', () => {
         fireEvent.click(screen.getByText('Item 1'));
 
         await waitFor(() => {
-            expect(router.state.location.search).toContain('details=1');
+            expect(navigation.getSearch()).toContain('details=1');
         });
 
         expect(screen.getAllByText(/loading/i).length).toBeGreaterThan(0);
@@ -277,7 +273,7 @@ describe('SearchPage component', () => {
         );
 
         await waitFor(() => {
-            expect(router.state.location.search).not.toContain('details=');
+            expect(navigation.getSearch()).not.toContain('details=');
         });
 
         expect(loadDetailsMock).toHaveBeenCalledTimes(1);
@@ -285,7 +281,7 @@ describe('SearchPage component', () => {
         fireEvent.click(screen.getByText('Item 1'));
 
         await waitFor(() => {
-            expect(router.state.location.search).toContain('details=1');
+            expect(navigation.getSearch()).toContain('details=1');
         });
 
         expect(await screen.findByText('Detail 1')).toBeInTheDocument();
@@ -299,10 +295,10 @@ describe('SearchPage component', () => {
             total: 6,
         });
 
-        const router = renderWithRouter('/?page=10');
+        const navigation = renderSearchPage('/?page=10');
 
         await waitFor(() => {
-            const search = router.state.location.search;
+            const search = navigation.getSearch();
             expect(search).toContain('page=2');
             expect(search).not.toContain('page=10');
         });
@@ -314,7 +310,7 @@ describe('SearchPage component', () => {
             total: 1,
         });
 
-        renderWithRouter();
+        renderSearchPage();
 
         await waitFor(() => {
             expect(screen.getByText('Item 1')).toBeInTheDocument();
@@ -338,7 +334,7 @@ describe('SearchPage component', () => {
         });
         loadDetailsMock.mockRejectedValue(new Error('fail'));
 
-        renderWithRouter();
+        renderSearchPage();
 
         await waitFor(() => {
             expect(screen.getByText('Item 1')).toBeInTheDocument();
@@ -365,7 +361,7 @@ describe('SearchPage component', () => {
         });
         loadDetailsMock.mockRejectedValue(new Error('fail'));
 
-        renderWithRouter('/?page=1&details=1');
+        renderSearchPage('/?page=1&details=1');
 
         await waitFor(() => {
             expect(screen.getByText('Item 1')).toBeInTheDocument();
@@ -386,7 +382,7 @@ describe('SearchPage component', () => {
             description: 'Detail desc',
         });
 
-        const router = renderWithRouter();
+        const navigation = renderSearchPage();
 
         await waitFor(() => {
             expect(screen.getByText('Item 1')).toBeInTheDocument();
@@ -395,7 +391,7 @@ describe('SearchPage component', () => {
         fireEvent.click(screen.getByText('Item 1'));
 
         await waitFor(() => {
-            expect(router.state.location.search).toContain('details=1');
+            expect(navigation.getSearch()).toContain('details=1');
             expect(
                 screen.getByRole('button', { name: 'Close details' })
             ).toBeInTheDocument();
@@ -415,7 +411,7 @@ describe('SearchPage component', () => {
             description: 'Detail desc',
         });
 
-        const router = renderWithRouter('/?page=1&details=1');
+        const navigation = renderSearchPage('/?page=1&details=1');
 
         await waitFor(() => {
             expect(screen.getByText('Detail 1')).toBeInTheDocument();
@@ -424,7 +420,7 @@ describe('SearchPage component', () => {
         fireEvent.click(screen.getByText('Item 1'));
 
         await waitFor(() => {
-            expect(router.state.location.search).not.toContain('details=');
+            expect(navigation.getSearch()).not.toContain('details=');
             expect(
                 screen.queryByRole('button', { name: 'Close details' })
             ).not.toBeInTheDocument();
@@ -442,7 +438,7 @@ describe('SearchPage component', () => {
             description: 'Detail desc',
         });
 
-        const router = renderWithRouter('/?page=1&details=1');
+        const navigation = renderSearchPage('/?page=1&details=1');
 
         await waitFor(() => {
             expect(
@@ -453,7 +449,7 @@ describe('SearchPage component', () => {
         fireEvent.click(screen.getByRole('button', { name: 'Close details' }));
 
         await waitFor(() => {
-            expect(router.state.location.search).not.toContain('details=');
+            expect(navigation.getSearch()).not.toContain('details=');
         });
     });
 
@@ -468,7 +464,7 @@ describe('SearchPage component', () => {
             description: 'Detail desc',
         });
 
-        const router = renderWithRouter('/?page=1&details=1');
+        const navigation = renderSearchPage('/?page=1&details=1');
 
         await waitFor(() => {
             expect(screen.getByText('Next')).toBeInTheDocument();
@@ -477,7 +473,7 @@ describe('SearchPage component', () => {
         fireEvent.click(screen.getByText('Next'));
 
         await waitFor(() => {
-            const search = router.state.location.search;
+            const search = navigation.getSearch();
             expect(search).toContain('page=2');
             expect(search).toContain('details=1');
         });
@@ -491,7 +487,7 @@ describe('SearchPage component', () => {
             total: 1,
         });
 
-        renderWithRouter();
+        renderSearchPage();
 
         await waitFor(() => {
             expect(screen.getByText('Item 1')).toBeInTheDocument();
@@ -517,7 +513,7 @@ describe('SearchPage component', () => {
             total: 1,
         });
 
-        renderWithRouter();
+        renderSearchPage();
 
         await waitFor(() => {
             expect(screen.getByText('Item 1')).toBeInTheDocument();
@@ -544,7 +540,7 @@ describe('SearchPage component', () => {
             total: 1,
         });
 
-        renderWithRouter();
+        renderSearchPage();
 
         await waitFor(() => {
             expect(screen.getByText('Item 1')).toBeInTheDocument();

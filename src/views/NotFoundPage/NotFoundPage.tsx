@@ -1,5 +1,5 @@
+import Link from 'next/link';
 import './NotFoundPage.css';
-import { Link } from 'react-router-dom';
 
 export function NotFoundPage() {
     return (
@@ -10,7 +10,7 @@ export function NotFoundPage() {
                 The page you are looking for does not exist.
             </p>
 
-            <Link className="text-link" to="/">
+            <Link className="text-link" href="/">
                 Go Home
             </Link>
         </section>

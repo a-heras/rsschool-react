@@ -1,32 +1,37 @@
-import { useEffect } from 'react';
-import { Outlet, useSearchParams } from 'react-router-dom';
-import { Search } from '../../components/Search/Search';
-import { CardList } from '../../components/CardList/CardList';
-import { Loading } from '../../components/Loading/Loading';
-import { ErrorMessage } from '../../components/ErrorMessage/ErrorMessage';
-import { ErrorButton } from '../../components/ErrorButton/ErrorButton';
-import { Pagination } from '../../components/Pagination/Pagination';
-import { ITEMS_PER_PAGE } from '../../config/pagination';
-import { useAppDispatch, useAppSelector } from '../../store/hooks';
+'use client';
+
+import { useEffect, useCallback } from 'react';
+import { useRouter, usePathname, useSearchParams } from 'next/navigation';
+import { Search } from '@/components/Search/Search';
+import { CardList } from '@/components/CardList/CardList';
+import { Loading } from '@/components/Loading/Loading';
+import { ErrorMessage } from '@/components/ErrorMessage/ErrorMessage';
+import { ErrorButton } from '@/components/ErrorButton/ErrorButton';
+import { Pagination } from '@/components/Pagination/Pagination';
+import { ITEMS_PER_PAGE } from '@/config/pagination';
+import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import {
     setSearchTerm,
     toggleItemSelection,
     clearSelectedItems,
-} from '../../store/searchSlice';
-import { searchApi, useGetItemsQuery } from '../../store/searchApi';
-import { SelectedItemsFlyout } from '../../components/SelectedItemsFlyout/SelectedItemsFlyout';
-import { downloadSelectedItemsCsv } from '../../utils/downloadSelectedItemsCsv';
+} from '@/store/searchSlice';
+import { searchApi, useGetItemsQuery } from '@/store/searchApi';
+import { SelectedItemsFlyout } from '@/components/SelectedItemsFlyout/SelectedItemsFlyout';
+import { downloadSelectedItemsCsv } from '@/utils/downloadSelectedItemsCsv';
+import { DetailsPage } from '@/views/DetailsPage/DetailsPage';
 import './SearchPage.css';
 
 export function SearchPage() {
     const dispatch = useAppDispatch();
-    const [searchParams, setSearchParams] = useSearchParams();
+    const router = useRouter();
+    const pathname = usePathname();
+    const searchParams = useSearchParams();
     const detailsId = searchParams.get('details');
     const page = Math.max(1, Number(searchParams.get('page')) || 1);
 
     const searchTerm = useAppSelector((state) => state.search.searchTerm);
     const selectedItems = useAppSelector((state) => state.search.selectedItems);
-   
+
     const { data, isLoading, isError } = useGetItemsQuery({
         term: searchTerm,
         page,
@@ -35,6 +40,17 @@ export function SearchPage() {
     const items = data?.items ?? [];
     const total = data?.total ?? 0;
     const maxPage = Math.ceil(total / ITEMS_PER_PAGE);
+
+    const setQueryParams = useCallback(
+        (params: Record<string, string>) => {
+            const sp = new URLSearchParams();
+            Object.entries(params).forEach(([key, value]) => {
+                sp.set(key, value);
+            });
+            router.push(`${pathname}?${sp.toString()}`);
+        },
+        [router, pathname]
+    );
 
     useEffect(() => {
         const saved = localStorage.getItem('searchTerm') ?? '';
@@ -52,7 +68,7 @@ export function SearchPage() {
 
         localStorage.setItem('searchTerm', trimmed);
 
-        setSearchParams({ page: '1' });
+        setQueryParams({ page: '1' });
     };
 
     useEffect(() => {
@@ -61,12 +77,12 @@ export function SearchPage() {
             if (detailsId) {
                 params.details = detailsId;
             }
-            setSearchParams(params);
+            setQueryParams(params);
         }
-    }, [page, maxPage, detailsId, setSearchParams]);
+    }, [page, maxPage, detailsId, setQueryParams]);
 
     const closeDetails = () => {
-        setSearchParams({ page: String(page) });
+        setQueryParams({ page: String(page) });
     };
 
     const openDetails = (id: string) => {
@@ -77,7 +93,7 @@ export function SearchPage() {
             return;
         }
 
-        setSearchParams({ page: String(page), details: id });
+        setQueryParams({ page: String(page), details: id });
     };
 
     const handleDownload = () => {
@@ -86,9 +102,9 @@ export function SearchPage() {
 
     const handlePageChange = (newPage: number) => {
         if (detailsId) {
-            setSearchParams({ page: String(newPage), details: detailsId });
+            setQueryParams({ page: String(newPage), details: detailsId });
         } else {
-            setSearchParams({ page: String(newPage) });
+            setQueryParams({ page: String(newPage) });
         }
     };
 
@@ -157,7 +173,10 @@ export function SearchPage() {
                                 >
                                     <span aria-hidden="true">×</span>
                                 </button>
-                                <Outlet />
+                                <DetailsPage
+                                    key={detailsId}
+                                    itemId={detailsId}
+                                />
                             </div>
                         )}
                     </div>

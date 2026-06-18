@@ -1,7 +1,9 @@
-import { useAppDispatch } from '../../store/hooks';
-import { searchApi, useGetItemDetailsQuery } from '../../store/searchApi';
-import { Loading } from '../../components/Loading/Loading';
-import { ErrorMessage } from '../../components/ErrorMessage/ErrorMessage';
+'use client';
+
+import { useAppDispatch } from '@/store/hooks';
+import { searchApi, useGetItemDetailsQuery } from '@/store/searchApi';
+import { Loading } from '@/components/Loading/Loading';
+import { ErrorMessage } from '@/components/ErrorMessage/ErrorMessage';
 import './DetailsPage.css';
 
 interface DetailsPageProps {

@@ -1,21 +1,32 @@
-import { NavLink } from 'react-router-dom';
+'use client';
+
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import './Header.css';
 import { ThemeToggle } from '../../components/ThemeToggle/ThemeToggle';
 
-function navLinkClass({ isActive }: { isActive: boolean }) {
-    return isActive ? 'nav-link active' : 'nav-link';
-}
-
 export function Header() {
+    const pathname = usePathname();
+
     return (
         <header className="header">
             <nav className="nav">
-                <NavLink to="/" end className={navLinkClass}>
+                <Link
+                    href="/"
+                    className={
+                        pathname === '/' ? 'nav-link active' : 'nav-link'
+                    }
+                >
                     Home
-                </NavLink>
-                <NavLink to="/about" className={navLinkClass}>
+                </Link>
+                <Link
+                    href="/about"
+                    className={
+                        pathname === '/about' ? 'nav-link active' : 'nav-link'
+                    }
+                >
                     About
-                </NavLink>
+                </Link>
             </nav>
             <ThemeToggle />
         </header>

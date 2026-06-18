@@ -1,15 +1,10 @@
 import { describe, it, expect } from 'vitest';
 import { render, screen } from '@testing-library/react';
-import { MemoryRouter } from 'react-router-dom';
 import { AboutPage } from './AboutPage';
 
 describe('AboutPage', () => {
     it('renders author info and RS School link', () => {
-        render(
-            <MemoryRouter>
-                <AboutPage />
-            </MemoryRouter>
-        );
+        render(<AboutPage />);
 
         expect(screen.getByText('About This App')).toBeInTheDocument();
 

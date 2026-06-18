@@ -1,35 +1,43 @@
+import '@/test-utils/mockNextNavigation';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { Provider } from 'react-redux';
-import { MemoryRouter } from 'react-router-dom';
-import App from './App';
-import { createTestStore } from './test-utils/testStore';
-import { loadDataMock, resetApiMocks } from './test-utils/mockApi';
-import { ThemeProvider } from './context/ThemeContext/ThemeContext';
+import { AppShell } from '@/app/AppShell';
+import { SearchPage } from '@/views/SearchPage/SearchPage';
+import { ThemeProvider } from '@/context/ThemeContext/ThemeContext';
+import { createTestStore } from '@/test-utils/testStore';
+import { loadDataMock, resetApiMocks } from '@/test-utils/mockApi';
+import { setInitialSearch } from '@/test-utils/mockNextNavigation';
 
-vi.mock('./api/api', async () => {
+vi.mock('@/api/api', async () => {
     const { loadDataMock: mockedLoadData } =
-        await import('./test-utils/mockApi');
+        await import('@/test-utils/mockApi');
     return { loadData: mockedLoadData };
 });
 
-describe('App component', () => {
+describe('App shell', () => {
     beforeEach(() => {
         localStorage.clear();
         resetApiMocks();
         loadDataMock.mockResolvedValue({ items: [], total: 0 });
+        setInitialSearch('page=1');
     });
 
-    it('renders search UI for user interaction', async () => {
-        render(
-            <Provider store={createTestStore()}>
+    function renderApp() {
+        const store = createTestStore();
+        return render(
+            <Provider store={store}>
                 <ThemeProvider>
-                    <MemoryRouter>
-                        <App />
-                    </MemoryRouter>
+                    <AppShell>
+                        <SearchPage />
+                    </AppShell>
                 </ThemeProvider>
             </Provider>
         );
+    }
+
+    it('renders search UI for user interaction', async () => {
+        renderApp();
 
         expect(
             await screen.findByPlaceholderText('Search...')
@@ -43,15 +51,7 @@ describe('App component', () => {
     });
 
     it('switches document theme when toggle is clicked', async () => {
-        render(
-            <Provider store={createTestStore()}>
-                <ThemeProvider>
-                    <MemoryRouter>
-                        <App />
-                    </MemoryRouter>
-                </ThemeProvider>
-            </Provider>
-        );
+        renderApp();
 
         await screen.findByPlaceholderText('Search...');
 

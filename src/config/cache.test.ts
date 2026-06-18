@@ -5,8 +5,8 @@ describe('cache config', () => {
         vi.unstubAllEnvs();
     });
 
-    it('uses VITE_CACHE_TTL_MS from environment', async () => {
-        vi.stubEnv('VITE_CACHE_TTL_MS', '120000');
+    it('uses NEXT_PUBLIC_CACHE_TTL_MS from environment', async () => {
+        vi.stubEnv('NEXT_PUBLIC_CACHE_TTL_MS', '120000');
         vi.resetModules();
 
         const { CACHE_TTL_MS, CACHE_TTL_SECONDS } =
@@ -17,7 +17,7 @@ describe('cache config', () => {
     });
 
     it('falls back to default when env is missing', async () => {
-        vi.stubEnv('VITE_CACHE_TTL_MS', '');
+        vi.stubEnv('NEXT_PUBLIC_CACHE_TTL_MS', '');
         vi.resetModules();
 
         const { CACHE_TTL_MS } = await import('./cache');
