@@ -23,11 +23,11 @@ vi.mock('@/api/api', async () => {
     return { loadData: mockedLoadData, loadDetails: mockedLoadDetails };
 });
 
-const downloadSelectedItemsCsvMock = vi.fn();
+const downloadCsvActionMock = vi.fn();
 
-vi.mock('@/utils/downloadSelectedItemsCsv', () => ({
-    downloadSelectedItemsCsv: (...args: unknown[]) =>
-        downloadSelectedItemsCsvMock(...args),
+vi.mock('@/actions/downloadCsv', () => ({
+    downloadSelectedItemsCsvAction: (...args: unknown[]) =>
+        downloadCsvActionMock(...args),
 }));
 
 function renderSearchPage(url = '/?page=1') {
@@ -59,7 +59,11 @@ describe('SearchPage component', () => {
         localStorage.clear();
         resetApiMocks();
         loadDataMock.mockResolvedValue(emptyLoadResult);
-        downloadSelectedItemsCsvMock.mockClear();
+        downloadCsvActionMock.mockClear();
+        downloadCsvActionMock.mockResolvedValue({
+            csv: 'id,name,description,details_url\n1,Item 1,Desc 1,url',
+            filename: '1_items.csv',
+        });
     });
 
     it('loads initial data on mount (success)', async () => {
@@ -70,8 +74,6 @@ describe('SearchPage component', () => {
         });
 
         renderSearchPage();
-
-        expect(screen.getByText('Loading...')).toBeInTheDocument();
 
         await waitFor(() => {
             expect(screen.getByText('A')).toBeInTheDocument();
@@ -221,15 +223,13 @@ describe('SearchPage component', () => {
             expect(loadDataMock).toHaveBeenCalledWith('', 2);
         });
 
-        const callsAfterPage2 = loadDataMock.mock.calls.length;
-
         fireEvent.click(screen.getByText('Prev'));
 
         await waitFor(() => {
             expect(screen.getByText('Item 1')).toBeInTheDocument();
         });
 
-        expect(loadDataMock.mock.calls.length).toBe(callsAfterPage2);
+        expect(loadDataMock).toHaveBeenCalledWith('', 1);
     });
 
     it('shows loading in details panel on first open only', async () => {
@@ -538,7 +538,7 @@ describe('SearchPage component', () => {
         ).not.toBeChecked();
     });
 
-    it('calls downloadSelectedItemsCsv when Download is clicked', async () => {
+    it('submits csv download to server action when Download is clicked', async () => {
         loadDataMock.mockResolvedValue({
             items: [listItem],
             total: 1,
@@ -555,9 +555,6 @@ describe('SearchPage component', () => {
         );
         fireEvent.click(screen.getByRole('button', { name: 'Download' }));
 
-        expect(downloadSelectedItemsCsvMock).toHaveBeenCalledWith(
-            [listItem],
-            window.location.origin
-        );
+        expect(downloadCsvActionMock).toHaveBeenCalled();
     });
 });

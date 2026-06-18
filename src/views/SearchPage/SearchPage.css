@@ -1,3 +1,23 @@
+.results-list-stack {
+    position: relative;
+}
+
+.results-list-server {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    pointer-events: none;
+    overflow: hidden;
+}
+
+.results-list-client {
+    position: relative;
+}
+
+.details-panel-shell--empty {
+    min-height: 1px;
+}
+
 .split {
     display: flex;
     gap: 0;

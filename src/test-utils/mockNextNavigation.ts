@@ -17,6 +17,8 @@ export function getSearchSnapshot() {
     return searchSnapshot;
 }
 
+export const refreshMock = vi.fn();
+
 export const pushMock = vi.fn((href: string) => {
     const queryIndex = href.indexOf('?');
     searchSnapshot = queryIndex === -1 ? '' : href.slice(queryIndex + 1);
@@ -40,6 +42,7 @@ vi.mock('@/i18n/navigation', () => ({
     useRouter: () => ({
         push: pushMock,
         replace: replaceMock,
+        refresh: refreshMock,
     }),
     usePathname: () => '/',
     redirect: vi.fn(),

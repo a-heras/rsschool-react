@@ -1,196 +1,208 @@
 'use client';
 
-import { useEffect, useCallback } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { useRouter, usePathname } from '@/i18n/navigation';
-import { Search } from '@/components/Search/Search';
-import { CardList } from '@/components/CardList/CardList';
 import { Loading } from '@/components/Loading/Loading';
 import { ErrorMessage } from '@/components/ErrorMessage/ErrorMessage';
-import { ErrorButton } from '@/components/ErrorButton/ErrorButton';
-import { Pagination } from '@/components/Pagination/Pagination';
-import { ITEMS_PER_PAGE } from '@/config/pagination';
-import { useAppDispatch, useAppSelector } from '@/store/hooks';
+import { parseSearchParams } from '@/lib/search/parseSearchParams';
 import {
-    setSearchTerm,
-    toggleItemSelection,
-    clearSelectedItems,
-} from '@/store/searchSlice';
-import { searchApi, useGetItemsQuery } from '@/store/searchApi';
-import { SelectedItemsFlyout } from '@/components/SelectedItemsFlyout/SelectedItemsFlyout';
-import { downloadSelectedItemsCsv } from '@/utils/downloadSelectedItemsCsv';
-import { DetailsPage } from '@/views/DetailsPage/DetailsPage';
+    loadSearchList,
+    loadSearchDetails,
+    type SearchDetailsResult,
+    type SearchListResult,
+} from '@/lib/search/loadSearchResults';
+import { buildSearchHref } from '@/lib/search/buildSearchPath';
+import { SearchPageToolbar } from './SearchPageToolbar';
+import { SearchResultsLayout } from './SearchResultsLayout';
+import { SearchResultsListClient } from './SearchResultsListClient';
+import { SearchResultsFooter } from './SearchResultsFooter';
+import { DetailsPanelShell } from './DetailsPanelShell';
+import { CloseDetailsButton } from './CloseDetailsButton';
+import { SelectedItemsFlyoutContainer } from './SelectedItemsFlyoutContainer';
 import './SearchPage.css';
 
+const detailsCache = new Map<string, SearchDetailsResult>();
+
+function TestDetailsPanel({
+    details,
+    isLoading,
+}: {
+    details: SearchDetailsResult | null;
+    isLoading: boolean;
+}) {
+    const t = useTranslations('details');
+
+    if (isLoading) {
+        return (
+            <section className="details-panel">
+                <div className="details-panel__state">
+                    <Loading />
+                </div>
+            </section>
+        );
+    }
+
+    if (!details || !details.ok) {
+        return (
+            <section className="details-panel">
+                <ErrorMessage message={t('loadError')} />
+            </section>
+        );
+    }
+
+    return (
+        <section className="details-panel">
+            <article className="details-container">
+                <p className="details-label">
+                    {t('itemLabel', { id: details.item.id })}
+                </p>
+                <h2 className="details-title">{details.item.name}</h2>
+                <p className="details-text">{details.item.description}</p>
+            </article>
+        </section>
+    );
+}
+
 export function SearchPage() {
-    const t = useTranslations('search');
-    const tDetails = useTranslations('details');
-    const dispatch = useAppDispatch();
+    const searchParams = useSearchParams();
     const router = useRouter();
     const pathname = usePathname();
-    const searchParams = useSearchParams();
-    const detailsId = searchParams.get('details');
-    const page = Math.max(1, Number(searchParams.get('page')) || 1);
+    const t = useTranslations('search');
 
-    const searchTerm = useAppSelector((state) => state.search.searchTerm);
-    const selectedItems = useAppSelector((state) => state.search.selectedItems);
-
-    const { data, isLoading, isError } = useGetItemsQuery({
-        term: searchTerm,
-        page,
-    });
-
-    const items = data?.items ?? [];
-    const total = data?.total ?? 0;
-    const maxPage = Math.ceil(total / ITEMS_PER_PAGE);
-
-    const setQueryParams = useCallback(
-        (params: Record<string, string>) => {
-            const sp = new URLSearchParams();
-            Object.entries(params).forEach(([key, value]) => {
-                sp.set(key, value);
-            });
-            router.push(`${pathname}?${sp.toString()}`);
-        },
-        [router, pathname]
+    const { page, q, detailsId } = parseSearchParams(
+        Object.fromEntries(searchParams.entries())
     );
 
-    useEffect(() => {
-        const saved = localStorage.getItem('searchTerm') ?? '';
-        if (saved && saved !== searchTerm) {
-            dispatch(setSearchTerm(saved));
-        }
-    }, [dispatch, searchTerm]);
+    const [list, setList] = useState<SearchListResult | null>(null);
+    const [details, setDetails] = useState<SearchDetailsResult | null>(null);
+    const [detailsLoading, setDetailsLoading] = useState(false);
+    const [listLoading, setListLoading] = useState(true);
 
-    const handleSearch = (term: string) => {
-        const trimmed = term.trim();
+    const fetchList = useCallback(async () => {
+        setListLoading(true);
+        const listResult = await loadSearchList(q, page);
+        setList(listResult);
+        setListLoading(false);
+    }, [page, q]);
 
-        if (trimmed === searchTerm) return;
-
-        dispatch(setSearchTerm(trimmed));
-
-        localStorage.setItem('searchTerm', trimmed);
-
-        setQueryParams({ page: '1' });
-    };
-
-    useEffect(() => {
-        if (page > maxPage && maxPage > 0) {
-            const params: Record<string, string> = { page: String(maxPage) };
-            if (detailsId) {
-                params.details = detailsId;
-            }
-            setQueryParams(params);
-        }
-    }, [page, maxPage, detailsId, setQueryParams]);
-
-    const closeDetails = () => {
-        setQueryParams({ page: String(page) });
-    };
-
-    const openDetails = (id: string) => {
-        if (!id || id === 'undefined') return;
-
-        if (detailsId === id) {
-            closeDetails();
+    const fetchDetails = useCallback(async () => {
+        if (!detailsId) {
+            setDetails(null);
+            setDetailsLoading(false);
             return;
         }
 
-        setQueryParams({ page: String(page), details: id });
-    };
-
-    const handleDownload = () => {
-        downloadSelectedItemsCsv(selectedItems, window.location.origin);
-    };
-
-    const handlePageChange = (newPage: number) => {
-        if (detailsId) {
-            setQueryParams({ page: String(newPage), details: detailsId });
-        } else {
-            setQueryParams({ page: String(newPage) });
+        const cached = detailsCache.get(detailsId);
+        if (cached) {
+            setDetails(cached);
+            setDetailsLoading(false);
+            return;
         }
-    };
 
-    const handleRefreshList = () => {
-        dispatch(
-            searchApi.util.invalidateTags([
-                { type: 'Items', id: 'LIST' },
-                { type: 'Items', id: `${searchTerm}-${page}` },
-            ])
+        setDetailsLoading(true);
+        const detailsResult = await loadSearchDetails(detailsId);
+
+        if (detailsResult?.ok) {
+            detailsCache.set(detailsId, detailsResult);
+        }
+
+        setDetails(detailsResult);
+        setDetailsLoading(false);
+    }, [detailsId]);
+
+    useEffect(() => {
+        if (list?.ok && list.total > 0 && page > list.maxPage) {
+            router.push(
+                buildSearchHref(pathname, {
+                    q,
+                    page: list.maxPage,
+                    detailsId,
+                })
+            );
+        }
+    }, [detailsId, list, page, pathname, q, router]);
+
+    const handleRefresh = useCallback(() => {
+        detailsCache.clear();
+        fetchList();
+        fetchDetails();
+    }, [fetchDetails, fetchList]);
+
+    useEffect(() => {
+        fetchList();
+    }, [fetchList]);
+
+    useEffect(() => {
+        fetchDetails();
+    }, [fetchDetails]);
+
+    if (!list) {
+        return (
+            <>
+                <SearchPageToolbar
+                    q={q}
+                    detailsId={detailsId}
+                    onRefresh={handleRefresh}
+                />
+                <div className="results-section panel">
+                    <Loading />
+                </div>
+                <SelectedItemsFlyoutContainer />
+            </>
         );
-    };
+    }
 
     return (
         <>
-            <div className="top-controls">
-                <Search
-                    key={searchTerm}
-                    savedTerm={searchTerm}
-                    onSearch={handleSearch}
-                />
-                <button
-                    type="button"
-                    className="btn btn--on-dark"
-                    onClick={handleRefreshList}
-                    aria-label={t('refreshAria')}
-                >
-                    {t('refresh')}
-                </button>
-            </div>
-
-            <div className="results-section panel">
-                <div className="results-section__body">
-                    <div className={detailsId ? 'split split--open' : 'split'}>
-                        <div className="split-left">
-                            {isError ? (
-                                <ErrorMessage message={t('loadError')} />
-                            ) : isLoading ? (
-                                <Loading />
-                            ) : (
-                                <CardList
-                                    items={items}
-                                    selectedItems={selectedItems}
-                                    onToggleSelect={(item) =>
-                                        dispatch(toggleItemSelection(item))
-                                    }
-                                    onOpenDetails={openDetails}
-                                />
-                            )}
-
-                            {!isLoading && !isError && total > 0 && (
-                                <Pagination
-                                    page={page}
-                                    maxPage={maxPage}
-                                    onPageChange={handlePageChange}
-                                />
-                            )}
-                            <ErrorButton />
-                        </div>
-                        {detailsId && (
-                            <div className="split-right">
-                                <button
-                                    type="button"
-                                    className="btn btn--on-dark close-btn"
-                                    onClick={closeDetails}
-                                    aria-label={tDetails('closeAria')}
-                                >
-                                    <span aria-hidden="true">×</span>
-                                </button>
-                                <DetailsPage
-                                    key={detailsId}
-                                    itemId={detailsId}
-                                />
-                            </div>
-                        )}
-                    </div>
-                </div>
-            </div>
-            <SelectedItemsFlyout
-                count={selectedItems.length}
-                onUnselectAll={() => dispatch(clearSelectedItems())}
-                onDownload={handleDownload}
+            <SearchPageToolbar
+                q={q}
+                detailsId={detailsId}
+                onRefresh={handleRefresh}
             />
+            <SearchResultsLayout
+                detailsId={detailsId}
+                list={
+                    <>
+                        {listLoading ? (
+                            <Loading />
+                        ) : !list.ok ? (
+                            <ErrorMessage message={t('loadError')} />
+                        ) : (
+                            <SearchResultsListClient
+                                items={list.items}
+                                page={page}
+                                q={q}
+                                detailsId={detailsId}
+                            />
+                        )}
+                        <SearchResultsFooter
+                            page={page}
+                            q={q}
+                            detailsId={detailsId}
+                            total={list.ok ? list.total : 0}
+                            maxPage={list.ok ? list.maxPage : 1}
+                        />
+                    </>
+                }
+                detailsPanel={
+                    <>
+                        {detailsId && (
+                            <CloseDetailsButton page={page} q={q} />
+                        )}
+                        <DetailsPanelShell detailsId={detailsId}>
+                            {detailsId && (
+                                <TestDetailsPanel
+                                    details={details}
+                                    isLoading={detailsLoading}
+                                />
+                            )}
+                        </DetailsPanelShell>
+                    </>
+                }
+            />
+            <SelectedItemsFlyoutContainer />
         </>
     );
 }
