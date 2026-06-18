@@ -1,18 +1,20 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
+import type { Item } from '@/types/item';
+import { CsvDownloadButton } from '@/components/CsvDownloadButton/CsvDownloadButton';
 import './SelectedItemsFlyout.css';
 
 interface SelectedItemsFlyoutProps {
     count: number;
+    selectedItems: Item[];
     onUnselectAll: () => void;
-    onDownload: () => void;
 }
 
 export function SelectedItemsFlyout({
     count,
+    selectedItems,
     onUnselectAll,
-    onDownload,
 }: SelectedItemsFlyoutProps) {
     const t = useTranslations('flyout');
 
@@ -32,13 +34,7 @@ export function SelectedItemsFlyout({
                 >
                     {t('unselectAll')}
                 </button>
-                <button
-                    type="button"
-                    className="btn btn--on-dark"
-                    onClick={onDownload}
-                >
-                    {t('download')}
-                </button>
+                <CsvDownloadButton items={selectedItems} />
             </div>
         </div>
     );

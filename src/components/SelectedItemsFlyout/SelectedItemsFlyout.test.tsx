@@ -2,22 +2,36 @@ import { screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { SelectedItemsFlyout } from './SelectedItemsFlyout';
 import { renderWithIntl } from '@/test-utils/renderWithIntl';
+import type { Item } from '@/types/item';
+
+const downloadCsvActionMock = vi.fn();
+
+vi.mock('@/actions/downloadCsv', () => ({
+    downloadSelectedItemsCsvAction: (...args: unknown[]) =>
+        downloadCsvActionMock(...args),
+}));
 
 describe('SelectedItemsFlyout component', () => {
     const onUnselectAll = vi.fn();
-    const onDownload = vi.fn();
+    const selectedItems: Item[] = [
+        { id: 1, name: 'Item 1', description: 'Desc 1' },
+    ];
 
     beforeEach(() => {
         onUnselectAll.mockClear();
-        onDownload.mockClear();
+        downloadCsvActionMock.mockClear();
+        downloadCsvActionMock.mockResolvedValue({
+            csv: 'id,name,description,details_url\n1,Item 1,Desc 1,url',
+            filename: '1_items.csv',
+        });
     });
 
     it('renders nothing when count is 0', () => {
         const { container } = renderWithIntl(
             <SelectedItemsFlyout
                 count={0}
+                selectedItems={[]}
                 onUnselectAll={onUnselectAll}
-                onDownload={onDownload}
             />
         );
 
@@ -28,8 +42,8 @@ describe('SelectedItemsFlyout component', () => {
         renderWithIntl(
             <SelectedItemsFlyout
                 count={2}
+                selectedItems={selectedItems}
                 onUnselectAll={onUnselectAll}
-                onDownload={onDownload}
             />
         );
 
@@ -42,8 +56,8 @@ describe('SelectedItemsFlyout component', () => {
         renderWithIntl(
             <SelectedItemsFlyout
                 count={1}
+                selectedItems={selectedItems}
                 onUnselectAll={onUnselectAll}
-                onDownload={onDownload}
             />
         );
 
@@ -55,8 +69,8 @@ describe('SelectedItemsFlyout component', () => {
         renderWithIntl(
             <SelectedItemsFlyout
                 count={3}
+                selectedItems={selectedItems}
                 onUnselectAll={onUnselectAll}
-                onDownload={onDownload}
             />
         );
 
@@ -67,8 +81,8 @@ describe('SelectedItemsFlyout component', () => {
         renderWithIntl(
             <SelectedItemsFlyout
                 count={1}
+                selectedItems={selectedItems}
                 onUnselectAll={onUnselectAll}
-                onDownload={onDownload}
             />
         );
 
@@ -77,17 +91,17 @@ describe('SelectedItemsFlyout component', () => {
         expect(onUnselectAll).toHaveBeenCalledTimes(1);
     });
 
-    it('calls onDownload when Download is clicked', () => {
+    it('submits csv download form to server action', () => {
         renderWithIntl(
             <SelectedItemsFlyout
                 count={1}
+                selectedItems={selectedItems}
                 onUnselectAll={onUnselectAll}
-                onDownload={onDownload}
             />
         );
 
         fireEvent.click(screen.getByRole('button', { name: 'Download' }));
 
-        expect(onDownload).toHaveBeenCalledTimes(1);
+        expect(downloadCsvActionMock).toHaveBeenCalled();
     });
 });
