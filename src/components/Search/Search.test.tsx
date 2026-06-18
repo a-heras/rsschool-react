@@ -1,6 +1,7 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { Search } from './Search';
+import { renderWithIntl } from '@/test-utils/renderWithIntl';
 
 describe('Search component', () => {
     beforeEach(() => {
@@ -8,20 +9,20 @@ describe('Search component', () => {
     });
 
     it('renders input and button', () => {
-        render(<Search onSearch={() => {}} />);
+        renderWithIntl(<Search onSearch={() => {}} />);
 
         expect(screen.getByPlaceholderText('Search...')).toBeInTheDocument();
         expect(screen.getByText('Search')).toBeInTheDocument();
     });
 
     it('loads saved search term from parent on mount', () => {
-        render(<Search onSearch={() => {}} savedTerm="SavedTerm" />);
+        renderWithIntl(<Search onSearch={() => {}} savedTerm="SavedTerm" />);
 
         expect(screen.getByDisplayValue('SavedTerm')).toBeInTheDocument();
     });
 
     it('updates input value when user types', () => {
-        render(<Search onSearch={() => {}} />);
+        renderWithIntl(<Search onSearch={() => {}} />);
 
         const input = screen.getByPlaceholderText('Search...');
 
@@ -33,7 +34,7 @@ describe('Search component', () => {
     it('calls onSearch with trimmed value when button is clicked', () => {
         const onSearchMock = vi.fn();
 
-        render(<Search onSearch={onSearchMock} />);
+        renderWithIntl(<Search onSearch={onSearchMock} />);
 
         const input = screen.getByPlaceholderText('Search...');
         const button = screen.getByText('Search');
@@ -45,7 +46,7 @@ describe('Search component', () => {
     });
 
     it('does NOT write to localStorage on typing (only reads on mount)', () => {
-        render(<Search onSearch={() => {}} />);
+        renderWithIntl(<Search onSearch={() => {}} />);
 
         const input = screen.getByPlaceholderText('Search...');
 
@@ -55,7 +56,7 @@ describe('Search component', () => {
     });
 
     it('does NOT crash when localStorage is empty', () => {
-        render(<Search onSearch={() => {}} />);
+        renderWithIntl(<Search onSearch={() => {}} />);
 
         const input = screen.getByPlaceholderText('Search...');
         expect(input).toHaveValue('');

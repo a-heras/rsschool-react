@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { type Item } from '@/types/item';
 import { Card } from '../Card/Card';
 import './CardList.css';
@@ -17,13 +18,15 @@ export function CardList({
     onToggleSelect,
     onOpenDetails,
 }: CardListProps) {
+    const t = useTranslations('cardList');
+
     return (
         <table className="results-table">
             <thead>
                 <tr>
-                    <th aria-label="Select" />
-                    <th>Item Name</th>
-                    <th>Item Description</th>
+                    <th aria-label={t('selectAria')} />
+                    <th>{t('nameColumn')}</th>
+                    <th>{t('descriptionColumn')}</th>
                 </tr>
             </thead>
             <tbody>

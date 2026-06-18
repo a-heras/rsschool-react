@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { type Item } from '@/types/item';
 import './Card.css';
 
@@ -16,6 +17,8 @@ export function Card({
     onToggleSelect,
     onOpenDetails,
 }: CardProps) {
+    const t = useTranslations('cardList');
+
     return (
         <tr
             className="table-row"
@@ -27,7 +30,7 @@ export function Card({
                     checked={isSelected}
                     onChange={() => onToggleSelect(item)}
                     onClick={(e) => e.stopPropagation()}
-                    aria-label={`Select ${item.name}`}
+                    aria-label={t('selectItem', { name: item.name })}
                 />
             </td>
             <td className="table-cell name-cell">{item.name}</td>

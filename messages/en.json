@@ -1,0 +1,69 @@
+{
+    "metadata": {
+        "title": "Search App",
+        "description": "RS School React course project"
+    },
+    "nav": {
+        "home": "Home",
+        "about": "About"
+    },
+    "theme": {
+        "dark": "Dark",
+        "light": "Light",
+        "switchToDark": "Switch to dark theme",
+        "switchToLight": "Switch to light theme"
+    },
+    "language": {
+        "label": "Language"
+    },
+    "search": {
+        "placeholder": "Search...",
+        "button": "Search",
+        "refresh": "Refresh",
+        "refreshAria": "Refresh search results",
+        "loadError": "Failed to load data. Please try again."
+    },
+    "details": {
+        "refresh": "Refresh",
+        "loadError": "Failed to load details. Please try again.",
+        "closeAria": "Close details",
+        "itemLabel": "Item #{id}"
+    },
+    "cardList": {
+        "selectAria": "Select",
+        "nameColumn": "Item Name",
+        "descriptionColumn": "Item Description",
+        "selectItem": "Select {name}"
+    },
+    "pagination": {
+        "prev": "Prev",
+        "next": "Next",
+        "page": "Page {page}"
+    },
+    "flyout": {
+        "ariaLabel": "Selected items",
+        "oneSelected": "1 item selected",
+        "manySelected": "{count} items selected",
+        "unselectAll": "Unselect all",
+        "download": "Download"
+    },
+    "about": {
+        "title": "About This App",
+        "author": "Author: Artem",
+        "description": "This application was created as part of the RS School React course.",
+        "courseLink": "RS School React Course"
+    },
+    "notFound": {
+        "title": "404 — Page Not Found",
+        "description": "The page you are looking for does not exist.",
+        "goHome": "Go Home"
+    },
+    "error": {
+        "title": "Something went wrong.",
+        "description": "Please reload the page or try again later.",
+        "throwButton": "Throw Error"
+    },
+    "loading": {
+        "text": "Loading..."
+    }
+}

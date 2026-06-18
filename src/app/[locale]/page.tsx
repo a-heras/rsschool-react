@@ -1,8 +1,16 @@
 import { Suspense } from 'react';
+import { setRequestLocale } from 'next-intl/server';
 import { SearchPage } from '@/views/SearchPage/SearchPage';
 import { Loading } from '@/components/Loading/Loading';
 
-export default function HomePage() {
+type PageProps = {
+    params: Promise<{ locale: string }>;
+};
+
+export default async function HomePage({ params }: PageProps) {
+    const { locale } = await params;
+    setRequestLocale(locale);
+
     return (
         <Suspense
             fallback={

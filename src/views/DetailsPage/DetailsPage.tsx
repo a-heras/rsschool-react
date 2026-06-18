@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { useAppDispatch } from '@/store/hooks';
 import { searchApi, useGetItemDetailsQuery } from '@/store/searchApi';
 import { Loading } from '@/components/Loading/Loading';
@@ -11,6 +12,7 @@ interface DetailsPageProps {
 }
 
 export function DetailsPage({ itemId }: DetailsPageProps) {
+    const t = useTranslations('details');
     const dispatch = useAppDispatch();
 
     const { data: item, isLoading, isError } = useGetItemDetailsQuery(itemId, {
@@ -39,9 +41,9 @@ export function DetailsPage({ itemId }: DetailsPageProps) {
                     className="btn btn--on-dark details-refresh-btn"
                     onClick={handleRefreshDetails}
                 >
-                    Refresh
+                    {t('refresh')}
                 </button>
-                <ErrorMessage message="Failed to load details. Please try again." />
+                <ErrorMessage message={t('loadError')} />
             </section>
         );
     }
@@ -55,10 +57,12 @@ export function DetailsPage({ itemId }: DetailsPageProps) {
                 className="btn btn--on-dark details-refresh-btn"
                 onClick={handleRefreshDetails}
             >
-                Refresh
+                {t('refresh')}
             </button>
             <article className="details-container">
-                <p className="details-label">Item #{item.id}</p>
+                <p className="details-label">
+                    {t('itemLabel', { id: item.id })}
+                </p>
                 <h2 className="details-title">{item.name}</h2>
                 <p className="details-text">{item.description}</p>
             </article>

@@ -1,7 +1,8 @@
-import { render, screen, fireEvent } from '@testing-library/react';
+import { screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { CardList } from './CardList';
 import type { Item } from '../../types/item';
+import { renderWithIntl } from '@/test-utils/renderWithIntl';
 
 describe('CardList component', () => {
     const onToggleSelect = vi.fn();
@@ -25,21 +26,21 @@ describe('CardList component', () => {
     });
 
     it('renders table with headers', () => {
-        render(<CardList {...defaultProps} />);
+        renderWithIntl(<CardList {...defaultProps} />);
 
         expect(screen.getByText('Item Name')).toBeInTheDocument();
         expect(screen.getByText('Item Description')).toBeInTheDocument();
     });
 
     it('renders correct number of rows', () => {
-        render(<CardList {...defaultProps} />);
+        renderWithIntl(<CardList {...defaultProps} />);
 
         const rows = screen.getAllByRole('row');
         expect(rows.length).toBe(3);
     });
 
     it('marks selected items with checked checkbox', () => {
-        render(<CardList {...defaultProps} selectedItems={[items[0]]} />);
+        renderWithIntl(<CardList {...defaultProps} selectedItems={[items[0]]} />);
 
         const checkboxes = screen.getAllByRole('checkbox');
         expect(checkboxes[0]).toBeChecked();
@@ -47,7 +48,7 @@ describe('CardList component', () => {
     });
 
     it('calls onOpenDetails when row text is clicked', () => {
-        render(<CardList {...defaultProps} />);
+        renderWithIntl(<CardList {...defaultProps} />);
 
         fireEvent.click(screen.getByText('Item 1'));
 
@@ -55,7 +56,7 @@ describe('CardList component', () => {
     });
 
     it('calls onToggleSelect when checkbox is clicked', () => {
-        render(<CardList {...defaultProps} />);
+        renderWithIntl(<CardList {...defaultProps} />);
 
         fireEvent.click(screen.getAllByRole('checkbox')[0]);
 

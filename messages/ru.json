@@ -1,0 +1,69 @@
+{
+    "metadata": {
+        "title": "Приложение поиска",
+        "description": "Проект курса RS School React"
+    },
+    "nav": {
+        "home": "Главная",
+        "about": "О проекте"
+    },
+    "theme": {
+        "dark": "Тёмная",
+        "light": "Светлая",
+        "switchToDark": "Переключить на тёмную тему",
+        "switchToLight": "Переключить на светлую тему"
+    },
+    "language": {
+        "label": "Язык"
+    },
+    "search": {
+        "placeholder": "Поиск...",
+        "button": "Искать",
+        "refresh": "Обновить",
+        "refreshAria": "Обновить результаты поиска",
+        "loadError": "Не удалось загрузить данные. Попробуйте снова."
+    },
+    "details": {
+        "refresh": "Обновить",
+        "loadError": "Не удалось загрузить детали. Попробуйте снова.",
+        "closeAria": "Закрыть детали",
+        "itemLabel": "Элемент #{id}"
+    },
+    "cardList": {
+        "selectAria": "Выбрать",
+        "nameColumn": "Название",
+        "descriptionColumn": "Описание",
+        "selectItem": "Выбрать {name}"
+    },
+    "pagination": {
+        "prev": "Назад",
+        "next": "Вперёд",
+        "page": "Страница {page}"
+    },
+    "flyout": {
+        "ariaLabel": "Выбранные элементы",
+        "oneSelected": "Выбран 1 элемент",
+        "manySelected": "Выбрано элементов: {count}",
+        "unselectAll": "Снять выделение",
+        "download": "Скачать"
+    },
+    "about": {
+        "title": "О приложении",
+        "author": "Автор: Artem",
+        "description": "Это приложение создано в рамках курса RS School React.",
+        "courseLink": "Курс RS School React"
+    },
+    "notFound": {
+        "title": "404 — Страница не найдена",
+        "description": "Страница, которую вы ищете, не существует.",
+        "goHome": "На главную"
+    },
+    "error": {
+        "title": "Что-то пошло не так.",
+        "description": "Перезагрузите страницу или попробуйте позже.",
+        "throwButton": "Вызвать ошибку"
+    },
+    "loading": {
+        "text": "Загрузка..."
+    }
+}

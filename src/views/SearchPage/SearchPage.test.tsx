@@ -2,6 +2,7 @@ import '@/test-utils/mockNextNavigation';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { Provider } from 'react-redux';
+import { NextIntlClientProvider } from 'next-intl';
 import { SearchPage } from './SearchPage';
 import { createTestStore } from '@/test-utils/testStore';
 import {
@@ -14,6 +15,7 @@ import {
     getSearchSnapshot,
     pushMock,
 } from '@/test-utils/mockNextNavigation';
+import enMessages from '../../../messages/en.json';
 
 vi.mock('@/api/api', async () => {
     const { loadDataMock: mockedLoadData, loadDetailsMock: mockedLoadDetails } =
@@ -37,7 +39,9 @@ function renderSearchPage(url = '/?page=1') {
 
     render(
         <Provider store={store}>
-            <SearchPage />
+            <NextIntlClientProvider locale="en" messages={enMessages}>
+                <SearchPage />
+            </NextIntlClientProvider>
         </Provider>
     );
 

@@ -1,7 +1,9 @@
 'use client';
 
 import { useEffect, useCallback } from 'react';
-import { useRouter, usePathname, useSearchParams } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
+import { useTranslations } from 'next-intl';
+import { useRouter, usePathname } from '@/i18n/navigation';
 import { Search } from '@/components/Search/Search';
 import { CardList } from '@/components/CardList/CardList';
 import { Loading } from '@/components/Loading/Loading';
@@ -22,6 +24,8 @@ import { DetailsPage } from '@/views/DetailsPage/DetailsPage';
 import './SearchPage.css';
 
 export function SearchPage() {
+    const t = useTranslations('search');
+    const tDetails = useTranslations('details');
     const dispatch = useAppDispatch();
     const router = useRouter();
     const pathname = usePathname();
@@ -129,9 +133,9 @@ export function SearchPage() {
                     type="button"
                     className="btn btn--on-dark"
                     onClick={handleRefreshList}
-                    aria-label="Refresh search results"
+                    aria-label={t('refreshAria')}
                 >
-                    Refresh
+                    {t('refresh')}
                 </button>
             </div>
 
@@ -140,7 +144,7 @@ export function SearchPage() {
                     <div className={detailsId ? 'split split--open' : 'split'}>
                         <div className="split-left">
                             {isError ? (
-                                <ErrorMessage message="Failed to load data. Please try again." />
+                                <ErrorMessage message={t('loadError')} />
                             ) : isLoading ? (
                                 <Loading />
                             ) : (
@@ -169,7 +173,7 @@ export function SearchPage() {
                                     type="button"
                                     className="btn btn--on-dark close-btn"
                                     onClick={closeDetails}
-                                    aria-label="Close details"
+                                    aria-label={tDetails('closeAria')}
                                 >
                                     <span aria-hidden="true">×</span>
                                 </button>

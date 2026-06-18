@@ -1,6 +1,7 @@
-import { render, screen, fireEvent } from '@testing-library/react';
+import { screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { SelectedItemsFlyout } from './SelectedItemsFlyout';
+import { renderWithIntl } from '@/test-utils/renderWithIntl';
 
 describe('SelectedItemsFlyout component', () => {
     const onUnselectAll = vi.fn();
@@ -12,7 +13,7 @@ describe('SelectedItemsFlyout component', () => {
     });
 
     it('renders nothing when count is 0', () => {
-        const { container } = render(
+        const { container } = renderWithIntl(
             <SelectedItemsFlyout
                 count={0}
                 onUnselectAll={onUnselectAll}
@@ -24,7 +25,7 @@ describe('SelectedItemsFlyout component', () => {
     });
 
     it('renders flyout region when count is greater than 0', () => {
-        render(
+        renderWithIntl(
             <SelectedItemsFlyout
                 count={2}
                 onUnselectAll={onUnselectAll}
@@ -38,7 +39,7 @@ describe('SelectedItemsFlyout component', () => {
     });
 
     it('shows "1 item selected" for a single item', () => {
-        render(
+        renderWithIntl(
             <SelectedItemsFlyout
                 count={1}
                 onUnselectAll={onUnselectAll}
@@ -51,7 +52,7 @@ describe('SelectedItemsFlyout component', () => {
     });
 
     it('shows "N items selected" for multiple items', () => {
-        render(
+        renderWithIntl(
             <SelectedItemsFlyout
                 count={3}
                 onUnselectAll={onUnselectAll}
@@ -63,7 +64,7 @@ describe('SelectedItemsFlyout component', () => {
     });
 
     it('calls onUnselectAll when Unselect all is clicked', () => {
-        render(
+        renderWithIntl(
             <SelectedItemsFlyout
                 count={1}
                 onUnselectAll={onUnselectAll}
@@ -77,7 +78,7 @@ describe('SelectedItemsFlyout component', () => {
     });
 
     it('calls onDownload when Download is clicked', () => {
-        render(
+        renderWithIntl(
             <SelectedItemsFlyout
                 count={1}
                 onUnselectAll={onUnselectAll}

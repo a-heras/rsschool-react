@@ -2,12 +2,14 @@ import '@/test-utils/mockNextNavigation';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { Provider } from 'react-redux';
+import { NextIntlClientProvider } from 'next-intl';
 import { AppShell } from '@/app/AppShell';
 import { SearchPage } from '@/views/SearchPage/SearchPage';
 import { ThemeProvider } from '@/context/ThemeContext/ThemeContext';
 import { createTestStore } from '@/test-utils/testStore';
 import { loadDataMock, resetApiMocks } from '@/test-utils/mockApi';
 import { setInitialSearch } from '@/test-utils/mockNextNavigation';
+import enMessages from '../../messages/en.json';
 
 vi.mock('@/api/api', async () => {
     const { loadDataMock: mockedLoadData } =
@@ -27,11 +29,13 @@ describe('App shell', () => {
         const store = createTestStore();
         return render(
             <Provider store={store}>
-                <ThemeProvider>
-                    <AppShell>
-                        <SearchPage />
-                    </AppShell>
-                </ThemeProvider>
+                <NextIntlClientProvider locale="en" messages={enMessages}>
+                    <ThemeProvider>
+                        <AppShell>
+                            <SearchPage />
+                        </AppShell>
+                    </ThemeProvider>
+                </NextIntlClientProvider>
             </Provider>
         );
     }

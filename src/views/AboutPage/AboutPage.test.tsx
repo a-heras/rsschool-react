@@ -1,10 +1,22 @@
-import { describe, it, expect } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { describe, it, expect, vi } from 'vitest';
+import { screen } from '@testing-library/react';
+import enMessages from '../../../messages/en.json';
 import { AboutPage } from './AboutPage';
+import { renderWithIntl } from '@/test-utils/renderWithIntl';
+
+vi.mock('next-intl/server', () => ({
+    getTranslations: async (namespace: string) => {
+        const messages = enMessages[namespace as keyof typeof enMessages] as
+            | Record<string, string>
+            | undefined;
+
+        return (key: string) => messages?.[key] ?? key;
+    },
+}));
 
 describe('AboutPage', () => {
-    it('renders author info and RS School link', () => {
-        render(<AboutPage />);
+    it('renders author info and RS School link', async () => {
+        renderWithIntl(await AboutPage());
 
         expect(screen.getByText('About This App')).toBeInTheDocument();
 

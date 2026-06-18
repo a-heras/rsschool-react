@@ -1,11 +1,13 @@
 'use client';
 
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { useTranslations } from 'next-intl';
+import { Link, usePathname } from '@/i18n/navigation';
 import './Header.css';
-import { ThemeToggle } from '../../components/ThemeToggle/ThemeToggle';
+import { ThemeToggle } from '@/components/ThemeToggle/ThemeToggle';
+import { LanguageSwitcher } from '@/components/LanguageSwitcher/LanguageSwitcher';
 
 export function Header() {
+    const t = useTranslations('nav');
     const pathname = usePathname();
 
     return (
@@ -17,7 +19,7 @@ export function Header() {
                         pathname === '/' ? 'nav-link active' : 'nav-link'
                     }
                 >
-                    Home
+                    {t('home')}
                 </Link>
                 <Link
                     href="/about"
@@ -25,10 +27,13 @@ export function Header() {
                         pathname === '/about' ? 'nav-link active' : 'nav-link'
                     }
                 >
-                    About
+                    {t('about')}
                 </Link>
             </nav>
-            <ThemeToggle />
+            <div className="header-controls">
+                <LanguageSwitcher />
+                <ThemeToggle />
+            </div>
         </header>
     );
 }

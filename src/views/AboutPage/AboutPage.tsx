@@ -1,16 +1,16 @@
+import { getTranslations } from 'next-intl/server';
 import './AboutPage.css';
 
-export function AboutPage() {
+export async function AboutPage() {
+    const t = await getTranslations('about');
+
     return (
         <section className="about">
-            <h1 className="about-title">About This App</h1>
+            <h1 className="about-title">{t('title')}</h1>
 
-            <p className="about-author">Author: Artem</p>
+            <p className="about-author">{t('author')}</p>
 
-            <p className="about-text">
-                This application was created as part of the RS School React
-                course.
-            </p>
+            <p className="about-text">{t('description')}</p>
 
             <a
                 className="text-link"
@@ -18,7 +18,7 @@ export function AboutPage() {
                 target="_blank"
                 rel="noopener noreferrer"
             >
-                RS School React Course
+                {t('courseLink')}
             </a>
         </section>
     );

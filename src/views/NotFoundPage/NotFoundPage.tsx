@@ -1,17 +1,18 @@
-import Link from 'next/link';
+import { getTranslations } from 'next-intl/server';
+import { Link } from '@/i18n/navigation';
 import './NotFoundPage.css';
 
-export function NotFoundPage() {
+export async function NotFoundPage() {
+    const t = await getTranslations('notFound');
+
     return (
         <section className="notfound">
-            <h1 className="notfound-title">404 — Page Not Found</h1>
+            <h1 className="notfound-title">{t('title')}</h1>
 
-            <p className="notfound-text">
-                The page you are looking for does not exist.
-            </p>
+            <p className="notfound-text">{t('description')}</p>
 
             <Link className="text-link" href="/">
-                Go Home
+                {t('goHome')}
             </Link>
         </section>
     );

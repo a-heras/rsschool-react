@@ -1,6 +1,8 @@
 import { render, screen } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
+import { NextIntlClientProvider } from 'next-intl';
 import { ErrorBoundary } from './ErrorBoundary';
+import enMessages from '../../messages/en.json';
 
 const Boom = () => {
     throw new Error('Boom');
@@ -9,9 +11,11 @@ const Boom = () => {
 describe('ErrorBoundary', () => {
     it('renders children when no error occurs', () => {
         render(
-            <ErrorBoundary>
-                <div>OK</div>
-            </ErrorBoundary>
+            <NextIntlClientProvider locale="en" messages={enMessages}>
+                <ErrorBoundary>
+                    <div>OK</div>
+                </ErrorBoundary>
+            </NextIntlClientProvider>
         );
 
         expect(screen.getByText('OK')).toBeInTheDocument();
@@ -21,9 +25,11 @@ describe('ErrorBoundary', () => {
         const spy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
         render(
-            <ErrorBoundary>
-                <Boom />
-            </ErrorBoundary>
+            <NextIntlClientProvider locale="en" messages={enMessages}>
+                <ErrorBoundary>
+                    <Boom />
+                </ErrorBoundary>
+            </NextIntlClientProvider>
         );
 
         expect(screen.getByText('Something went wrong.')).toBeInTheDocument();

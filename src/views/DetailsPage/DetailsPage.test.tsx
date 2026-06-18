@@ -1,10 +1,13 @@
+import type { ReactElement } from 'react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, waitFor, fireEvent } from '@testing-library/react';
 import { Provider } from 'react-redux';
+import { NextIntlClientProvider } from 'next-intl';
 import { DetailsPage } from './DetailsPage';
 import { loadDetails } from '../../api/api';
 import { createTestStore } from '../../test-utils/testStore';
 import type { Item } from '../../types/item';
+import enMessages from '../../../messages/en.json';
 
 vi.mock('../../api/api');
 
@@ -22,21 +25,32 @@ const itemTwo: Item = {
     description: 'Another description',
 };
 
+function renderDetailsTree(
+    store: ReturnType<typeof createTestStore>,
+    itemId: string,
+    remountKey?: string
+): ReactElement {
+    return (
+        <Provider store={store}>
+            <NextIntlClientProvider locale="en" messages={enMessages}>
+                <DetailsPage key={remountKey} itemId={itemId} />
+            </NextIntlClientProvider>
+        </Provider>
+    );
+}
+
 function renderDetails(itemId: string) {
     const store = createTestStore();
     return {
         store,
-        ...render(
-            <Provider store={store}>
-                <DetailsPage itemId={itemId} />
-            </Provider>
-        ),
+        ...render(renderDetailsTree(store, itemId)),
     };
 }
 
 describe('DetailsPage', () => {
     beforeEach(() => {
         vi.clearAllMocks();
+        loadDetailsMock.mockReset();
     });
 
     it('shows loading state initially', () => {
@@ -125,28 +139,16 @@ describe('DetailsPage', () => {
             .mockResolvedValueOnce(itemTwo);
 
         const store = createTestStore();
-        const { rerender } = render(
-            <Provider store={store}>
-                <DetailsPage itemId="1" />
-            </Provider>
-        );
+        const { rerender } = render(renderDetailsTree(store, '1'));
 
         await screen.findByText('Test Item');
 
-        rerender(
-            <Provider store={store}>
-                <DetailsPage itemId="2" />
-            </Provider>
-        );
+        rerender(renderDetailsTree(store, '2'));
 
         await screen.findByText('Second Item');
         expect(loadDetailsMock).toHaveBeenCalledTimes(2);
 
-        rerender(
-            <Provider store={store}>
-                <DetailsPage itemId="1" />
-            </Provider>
-        );
+        rerender(renderDetailsTree(store, '1'));
 
         await screen.findByText('Test Item');
         expect(loadDetailsMock).toHaveBeenCalledTimes(2);
@@ -159,19 +161,11 @@ describe('DetailsPage', () => {
             .mockResolvedValueOnce(itemTwo);
 
         const store = createTestStore();
-        const { rerender } = render(
-            <Provider store={store}>
-                <DetailsPage itemId="1" />
-            </Provider>
-        );
+        const { rerender } = render(renderDetailsTree(store, '1'));
 
         expect(await screen.findByText('Test Item')).toBeInTheDocument();
 
-        rerender(
-            <Provider store={store}>
-                <DetailsPage key="2" itemId="2" />
-            </Provider>
-        );
+        rerender(renderDetailsTree(store, '2', '2'));
 
         expect(await screen.findByText('Second Item')).toBeInTheDocument();
         expect(screen.getByText('Another description')).toBeInTheDocument();
@@ -208,19 +202,11 @@ describe('DetailsPage', () => {
         );
 
         const store = createTestStore();
-        const { rerender } = render(
-            <Provider store={store}>
-                <DetailsPage itemId="1" />
-            </Provider>
-        );
+        const { rerender } = render(renderDetailsTree(store, '1'));
 
         await screen.findByText('Test Item');
 
-        rerender(
-            <Provider store={store}>
-                <DetailsPage key="2" itemId="2" />
-            </Provider>
-        );
+        rerender(renderDetailsTree(store, '2', '2'));
 
         expect(screen.getByText(/loading/i)).toBeInTheDocument();
 

@@ -1,4 +1,7 @@
+'use client';
+
 import { Component, type ReactNode } from 'react';
+import { ErrorFallback } from './ErrorFallback';
 
 interface ErrorBoundaryState {
     hasError: boolean;
@@ -24,12 +27,7 @@ export class ErrorBoundary extends Component<
 
     render() {
         if (this.state.hasError) {
-            return (
-                <div style={{ padding: '20px', color: 'darkred' }}>
-                    <h2>Something went wrong.</h2>
-                    <p>Please reload the page or try again later.</p>
-                </div>
-            );
+            return <ErrorFallback />;
         }
 
         return this.props.children;

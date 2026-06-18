@@ -1,12 +1,13 @@
-import { render, screen, fireEvent } from '@testing-library/react';
+import { screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
 import { Pagination } from './Pagination';
+import { renderWithIntl } from '@/test-utils/renderWithIntl';
 
 describe('Pagination component', () => {
     it('disables Prev button on first page', () => {
         const onPageChange = vi.fn();
 
-        render(<Pagination page={1} maxPage={5} onPageChange={onPageChange} />);
+        renderWithIntl(<Pagination page={1} maxPage={5} onPageChange={onPageChange} />);
 
         const prev = screen.getByText('Prev');
         expect(prev).toBeDisabled();
@@ -15,7 +16,7 @@ describe('Pagination component', () => {
     it('disables Next button on last page', () => {
         const onPageChange = vi.fn();
 
-        render(<Pagination page={5} maxPage={5} onPageChange={onPageChange} />);
+        renderWithIntl(<Pagination page={5} maxPage={5} onPageChange={onPageChange} />);
 
         const next = screen.getByText('Next');
         expect(next).toBeDisabled();
@@ -24,7 +25,7 @@ describe('Pagination component', () => {
     it('calls onPageChange with page - 1 when Prev clicked', () => {
         const onPageChange = vi.fn();
 
-        render(<Pagination page={3} maxPage={5} onPageChange={onPageChange} />);
+        renderWithIntl(<Pagination page={3} maxPage={5} onPageChange={onPageChange} />);
 
         const prev = screen.getByText('Prev');
         fireEvent.click(prev);
@@ -35,7 +36,7 @@ describe('Pagination component', () => {
     it('calls onPageChange with page + 1 when Next clicked', () => {
         const onPageChange = vi.fn();
 
-        render(<Pagination page={3} maxPage={5} onPageChange={onPageChange} />);
+        renderWithIntl(<Pagination page={3} maxPage={5} onPageChange={onPageChange} />);
 
         const next = screen.getByText('Next');
         fireEvent.click(next);
@@ -46,7 +47,7 @@ describe('Pagination component', () => {
     it('shows correct page number', () => {
         const onPageChange = vi.fn();
 
-        render(
+        renderWithIntl(
             <Pagination page={7} maxPage={10} onPageChange={onPageChange} />
         );
 

@@ -1,7 +1,19 @@
-import { render, screen, fireEvent } from '@testing-library/react';
+import type { ComponentProps } from 'react';
+import { screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
 import { Card } from './Card';
 import type { Item } from '../../types/item';
+import { renderWithIntl } from '@/test-utils/renderWithIntl';
+
+function renderCard(props: ComponentProps<typeof Card>) {
+    return renderWithIntl(
+        <table>
+            <tbody>
+                <Card {...props} />
+            </tbody>
+        </table>
+    );
+}
 
 describe('Card component', () => {
     const item: Item = {
@@ -18,24 +30,12 @@ describe('Card component', () => {
     };
 
     it('renders table row', () => {
-        render(
-            <table>
-                <tbody>
-                    <Card {...defaultProps} />
-                </tbody>
-            </table>
-        );
+        renderCard(defaultProps);
         expect(screen.getByRole('row')).toBeInTheDocument();
     });
 
     it('renders item name and description', () => {
-        render(
-            <table>
-                <tbody>
-                    <Card {...defaultProps} />
-                </tbody>
-            </table>
-        );
+        renderCard(defaultProps);
         expect(screen.getByText('Test Name')).toBeInTheDocument();
         expect(screen.getByText('Test Description')).toBeInTheDocument();
     });
@@ -43,13 +43,7 @@ describe('Card component', () => {
     it('calls onOpenDetails when row is clicked', () => {
         const onOpenDetails = vi.fn();
 
-        render(
-            <table>
-                <tbody>
-                    <Card {...defaultProps} onOpenDetails={onOpenDetails} />
-                </tbody>
-            </table>
-        );
+        renderCard({ ...defaultProps, onOpenDetails: onOpenDetails });
 
         fireEvent.click(screen.getByText('Test Name'));
 
@@ -59,13 +53,7 @@ describe('Card component', () => {
     it('calls onToggleSelect when checkbox is clicked', () => {
         const onToggleSelect = vi.fn();
 
-        render(
-            <table>
-                <tbody>
-                    <Card {...defaultProps} onToggleSelect={onToggleSelect} />
-                </tbody>
-            </table>
-        );
+        renderCard({ ...defaultProps, onToggleSelect: onToggleSelect });
 
         fireEvent.click(screen.getByRole('checkbox'));
 
@@ -76,17 +64,11 @@ describe('Card component', () => {
         const onOpenDetails = vi.fn();
         const onToggleSelect = vi.fn();
 
-        render(
-            <table>
-                <tbody>
-                    <Card
-                        {...defaultProps}
-                        onOpenDetails={onOpenDetails}
-                        onToggleSelect={onToggleSelect}
-                    />
-                </tbody>
-            </table>
-        );
+        renderCard({
+            ...defaultProps,
+            onOpenDetails: onOpenDetails,
+            onToggleSelect: onToggleSelect,
+        });
 
         fireEvent.click(screen.getByRole('checkbox'));
 
