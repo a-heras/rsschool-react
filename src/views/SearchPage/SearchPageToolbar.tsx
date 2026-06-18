@@ -3,7 +3,7 @@
 import { useEffect } from 'react';
 import { useTranslations } from 'next-intl';
 import { useRouter, usePathname } from '@/i18n/navigation';
-import { Search } from '@/components/Search/Search';
+import { SearchForm } from '@/components/SearchForm/SearchForm';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { setSearchTerm } from '@/store/searchSlice';
 import { buildSearchHref } from '@/lib/search/buildSearchPath';
@@ -42,18 +42,6 @@ export function SearchPageToolbar({
         }
     }, [detailsId, pathname, q, router]);
 
-    const handleSearch = (term: string) => {
-        const trimmed = term.trim();
-
-        if (trimmed === q) {
-            return;
-        }
-
-        dispatch(setSearchTerm(trimmed));
-        localStorage.setItem('searchTerm', trimmed);
-        router.push(buildSearchHref(pathname, { q: trimmed, page: 1 }));
-    };
-
     const handleRefreshList = () => {
         onRefresh?.();
         router.refresh();
@@ -61,7 +49,7 @@ export function SearchPageToolbar({
 
     return (
         <div className="top-controls">
-            <Search key={q} savedTerm={q} onSearch={handleSearch} />
+            <SearchForm q={q} />
             <button
                 type="button"
                 className="btn btn--on-dark"

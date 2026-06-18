@@ -2,14 +2,23 @@
 
 import { useTranslations } from 'next-intl';
 import { type Item } from '@/types/item';
+import { selectDetailsAction } from '@/actions/search';
 import { Card } from '../Card/Card';
 import './CardList.css';
+
+type SearchContext = {
+    q: string;
+    page: number;
+    detailsId: string | null;
+};
 
 interface CardListProps {
     items: Item[];
     selectedItems: Item[];
     onToggleSelect: (item: Item) => void;
-    onOpenDetails: (id: string) => void;
+    onOpenDetails?: (id: string) => void;
+    selectDetailsAction?: typeof selectDetailsAction;
+    searchContext?: SearchContext;
 }
 
 export function CardList({
@@ -17,6 +26,8 @@ export function CardList({
     selectedItems,
     onToggleSelect,
     onOpenDetails,
+    selectDetailsAction: detailsAction,
+    searchContext,
 }: CardListProps) {
     const t = useTranslations('cardList');
 
@@ -42,6 +53,8 @@ export function CardList({
                             isSelected={isSelected}
                             onToggleSelect={onToggleSelect}
                             onOpenDetails={onOpenDetails}
+                            selectDetailsAction={detailsAction}
+                            searchContext={searchContext}
                         />
                     );
                 })}

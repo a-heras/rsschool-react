@@ -1,4 +1,5 @@
 import '@/test-utils/mockNextNavigation';
+import '@/test-utils/mockSearchActions';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { Provider } from 'react-redux';
