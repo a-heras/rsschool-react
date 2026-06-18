@@ -1,0 +1,63 @@
+.app-view {
+    position: relative;
+    overflow-x: hidden;
+}
+
+html[data-theme='dark'] .app-view::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 7rem;
+    pointer-events: none;
+    z-index: 0;
+    background: linear-gradient(
+        90deg,
+        transparent 0%,
+        rgba(160, 248, 29, 0.05) 28%,
+        rgba(160, 248, 29, 0.18) 50%,
+        rgba(160, 248, 29, 0.05) 72%,
+        transparent 100%
+    );
+    background-size: 220% 100%;
+    background-repeat: no-repeat;
+    filter: blur(20px);
+    opacity: 0.8;
+    animation: sheen 10s ease-in-out infinite;
+    -webkit-mask-image: linear-gradient(
+        to bottom,
+        #000 0%,
+        #000 45%,
+        transparent 100%
+    );
+    mask-image: linear-gradient(
+        to bottom,
+        #000 0%,
+        #000 45%,
+        transparent 100%
+    );
+}
+
+html[data-theme='dark'] .app-view > .header,
+html[data-theme='dark'] .app-view > .main-container {
+    position: relative;
+    z-index: 1;
+}
+
+html[data-theme='dark'] .header {
+    background: transparent;
+    overflow: hidden;
+}
+
+html[data-theme='dark'] .header::before {
+    display: none;
+}
+
+html[data-theme='dark'] .main-container {
+    background: transparent;
+}
+
+html[data-theme='dark'] .flyout {
+    border-top: 1px solid var(--color-border);
+}

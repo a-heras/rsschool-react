@@ -1,0 +1,27 @@
+.main-container {
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: 28px 20px 100px;
+}
+
+.top-controls {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-bottom: 24px;
+}
+
+.results-section {
+    padding: 0;
+}
+
+.results-section__body {
+    padding: 20px 18px 24px;
+}
+
+html[data-theme='dark'] .results-section.panel {
+    background: transparent;
+    box-shadow: none;
+    border: 1px solid var(--color-border-light);
+}
